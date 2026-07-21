@@ -37,19 +37,24 @@ export function FeedbackButton({
   }, [open]);
 
   const isUpcoming = variant === "upcoming";
+  const label = isUpcoming ? "Share an idea" : "Suggest";
 
   return (
     <>
       <button
         type="button"
+        aria-label={label}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           setOpen(true);
         }}
-        className={className}
+        className={`group/fb inline-flex items-center ${className}`}
       >
-        {isUpcoming ? "💡 Share an idea" : "💡 Suggest"}
+        <span aria-hidden>💡</span>
+        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover/fb:ml-1 group-hover/fb:max-w-[8rem] group-hover/fb:opacity-100 group-focus-visible/fb:ml-1 group-focus-visible/fb:max-w-[8rem] group-focus-visible/fb:opacity-100">
+          {label}
+        </span>
       </button>
 
       {open && (

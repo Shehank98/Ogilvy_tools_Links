@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 import { feedbackSchema, feedbackUpdateSchema } from "@/lib/validation";
@@ -68,4 +69,5 @@ export async function deleteFeedback(formData: FormData): Promise<void> {
   const id = String(formData.get("id"));
   await prisma.feedback.delete({ where: { id } });
   revalidatePath("/admin/feedback");
+  redirect("/admin/feedback");
 }
