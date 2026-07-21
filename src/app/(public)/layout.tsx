@@ -18,13 +18,21 @@ export default async function PublicLayout({
 }: {
   children: ReactNode;
 }) {
-  const notice = await prisma.notice
+  const row = await prisma.notice
     .findFirst({
       where: { isActive: true },
       orderBy: { createdAt: "desc" },
-      select: { id: true, message: true, type: true },
+      select: { id: true, message: true, type: true, updatedAt: true },
     })
     .catch(() => null);
+  const notice = row
+    ? {
+        id: row.id,
+        message: row.message,
+        type: row.type,
+        version: String(row.updatedAt.getTime()),
+      }
+    : null;
 
   return (
     <>

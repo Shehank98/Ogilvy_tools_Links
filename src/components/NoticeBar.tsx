@@ -6,6 +6,9 @@ export type NoticeItem = {
   id: string;
   message: string;
   type: "INFO" | "UPDATE" | "BUGFIX" | "WARNING";
+  // Bumped whenever the notice is edited; part of the dismissal key so an
+  // edited notice re-shows to visitors who dismissed the previous version.
+  version: string;
 };
 
 const styles: Record<NoticeItem["type"], { bar: string; label: string }> = {
@@ -15,7 +18,7 @@ const styles: Record<NoticeItem["type"], { bar: string; label: string }> = {
   WARNING: { bar: "bg-amber-500 text-black", label: "Heads up" },
 };
 
-const storageKey = (n: NoticeItem) => `notice-dismissed:${n.id}`;
+const storageKey = (n: NoticeItem) => `notice-dismissed:${n.id}:${n.version}`;
 
 export function NoticeBar({ notice }: { notice: NoticeItem | null }) {
   const [dismissed, setDismissed] = useState(true);
