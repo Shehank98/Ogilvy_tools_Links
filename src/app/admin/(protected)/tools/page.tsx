@@ -16,7 +16,7 @@ export default async function AdminToolsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Tools</h1>
         <Link
           href="/admin/tools/new"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
         >
           + Add tool
         </Link>
@@ -38,7 +38,7 @@ export default async function AdminToolsPage() {
                     className="h-7 w-7 rounded object-contain"
                   />
                 ) : (
-                  <span className="flex h-7 w-7 items-center justify-center rounded bg-indigo-100 text-xs font-bold text-indigo-700">
+                  <span className="flex h-7 w-7 items-center justify-center rounded bg-brand-light text-xs font-bold text-brand-dark">
                     {tool.name.charAt(0).toUpperCase()}
                   </span>
                 )}
@@ -75,7 +75,7 @@ export default async function AdminToolsPage() {
               <div className="flex justify-end gap-2">
                 <Link
                   href={`/admin/tools/${tool.id}`}
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                  className="text-sm font-medium text-brand hover:text-brand-dark"
                 >
                   Edit
                 </Link>

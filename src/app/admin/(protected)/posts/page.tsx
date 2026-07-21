@@ -21,7 +21,7 @@ export default async function AdminPostsPage() {
         <h1 className="text-2xl font-bold text-gray-900">Tips & Tricks</h1>
         <Link
           href="/admin/posts/new"
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
         >
           + New post
         </Link>
@@ -65,7 +65,7 @@ export default async function AdminPostsPage() {
                 )}
                 <Link
                   href={`/admin/posts/${post.id}`}
-                  className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                  className="text-sm font-medium text-brand hover:text-brand-dark"
                 >
                   Edit
                 </Link>

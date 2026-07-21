@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { FEATURES } from "@/lib/features";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { prisma } from "@/lib/prisma";
@@ -17,6 +18,7 @@ export default async function PostPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  if (!FEATURES.tips) redirect("/");
   const { slug } = await params;
   const post = await prisma.post.findFirst({
     where: { slug, status: "PUBLISHED" },
@@ -27,7 +29,7 @@ export default async function PostPage({
     <article className="mx-auto max-w-3xl">
       <Link
         href="/tips"
-        className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+        className="text-sm font-medium text-brand hover:text-brand-dark"
       >
         ← All tips & tricks
       </Link>

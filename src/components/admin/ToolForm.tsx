@@ -77,7 +77,7 @@ export function ToolForm({
             type="checkbox"
             name="isActive"
             defaultChecked={tool ? tool.isActive : true}
-            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+            className="h-4 w-4 rounded border-gray-300 text-brand focus:ring-brand"
           />
           Active (visible on the public site)
         </label>

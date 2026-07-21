@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { FEATURES } from "@/lib/features";
 import { Card, EmptyState } from "@/components/Card";
 import { StatusBadge } from "@/components/StatusBadge";
 
@@ -16,6 +18,7 @@ export default async function RequestStatusPage({
 }: {
   searchParams: Promise<{ email?: string }>;
 }) {
+  if (!FEATURES.requests) redirect("/");
   const { email } = await searchParams;
   const requests = email
     ? await prisma.toolRequest.findMany({
@@ -34,7 +37,7 @@ export default async function RequestStatusPage({
           Enter the email you used when submitting your request.{" "}
           <Link
             href="/request"
-            className="font-medium text-indigo-600 hover:text-indigo-800"
+            className="font-medium text-brand hover:text-brand-dark"
           >
             Submit a new request
           </Link>
@@ -49,11 +52,11 @@ export default async function RequestStatusPage({
           defaultValue={email ?? ""}
           placeholder="you@company.com"
           required
-          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
         />
         <button
           type="submit"
-          className="shrink-0 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          className="shrink-0 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark"
         >
           Look up
         </button>

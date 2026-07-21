@@ -57,7 +57,7 @@ export default async function AdminRequestsPage() {
             cell: (req) => (
               <Link
                 href={`/admin/requests/${req.id}`}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+                className="text-sm font-medium text-brand hover:text-brand-dark"
               >
                 Review
               </Link>

@@ -24,9 +24,9 @@ export default async function AdminLayout({
     <>
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-4">
-          <Link href="/admin" className="text-lg font-bold text-indigo-700">
+          <Link href="/admin" className="text-lg font-bold text-brand-dark">
             Tools Hub{" "}
-            <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-xs font-semibold text-indigo-700">
+            <span className="rounded bg-brand-light px-1.5 py-0.5 text-xs font-semibold text-brand-dark">
               ADMIN
             </span>
           </Link>

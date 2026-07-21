@@ -31,7 +31,7 @@ export default async function AdminRequestDetailPage({
     <div className="mx-auto max-w-3xl space-y-6">
       <Link
         href="/admin/requests"
-        className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+        className="text-sm font-medium text-brand hover:text-brand-dark"
       >
         ← All requests
       </Link>
@@ -71,7 +71,7 @@ export default async function AdminRequestDetailPage({
                   href={request.attachmentUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-indigo-600 underline hover:text-indigo-800"
+                  className="text-brand underline hover:text-brand-dark"
                 >
                   {request.attachmentUrl}
                 </a>

@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { FEATURES } from "@/lib/features";
 import { ActionForm } from "@/components/ActionForm";
 import { Field, Select, TextArea, TextInput } from "@/components/fields";
 import { submitToolRequest } from "@/lib/actions/requests";
 
 export default function RequestPage() {
+  if (!FEATURES.requests) redirect("/");
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
@@ -13,7 +16,7 @@ export default function RequestPage() {
           it. Already submitted?{" "}
           <Link
             href="/request/status"
-            className="font-medium text-indigo-600 hover:text-indigo-800"
+            className="font-medium text-brand hover:text-brand-dark"
           >
             Check your request status
           </Link>

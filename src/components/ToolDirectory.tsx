@@ -19,31 +19,35 @@ function ToolCard({ tool }: { tool: ToolItem }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => logToolClick(tool.id)}
-      className="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand hover:shadow-lg"
     >
-      <div className="mb-3 flex items-center gap-3">
+      <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-200 group-hover:scale-x-100" />
+      <div className="mb-4 flex items-center gap-3">
         {tool.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={tool.logoUrl}
             alt=""
-            className="h-10 w-10 rounded-lg object-contain"
+            className="h-11 w-11 rounded-xl border border-black/5 bg-white object-contain p-1"
           />
         ) : (
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 text-lg font-bold text-indigo-700">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
             {tool.name.charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="font-semibold text-gray-900 group-hover:text-indigo-700">
+        <span className="text-base font-semibold text-black group-hover:text-brand-dark">
           {tool.name}
+        </span>
+        <span className="ml-auto text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-brand">
+          ↗
         </span>
       </div>
       {tool.description && (
-        <p className="mb-3 line-clamp-3 text-sm text-gray-600">
+        <p className="mb-4 line-clamp-3 text-sm leading-relaxed text-neutral-600">
           {tool.description}
         </p>
       )}
-      <span className="mt-auto inline-flex w-fit rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+      <span className="mt-auto inline-flex w-fit rounded-full border border-black/10 bg-neutral-50 px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-600">
         {tool.category}
       </span>
     </a>
@@ -80,12 +84,12 @@ export function ToolDirectory({ tools }: { tools: ToolItem[] }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search tools…"
-          className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-full border border-black/15 bg-white px-5 py-3 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:w-56"
+          className="rounded-full border border-black/15 bg-white px-5 py-3 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30 sm:w-56"
         >
           <option value="all">All categories</option>
           {categories.map((c) => (

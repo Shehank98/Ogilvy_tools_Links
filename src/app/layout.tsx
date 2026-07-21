@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Stand-ins for the proprietary Ogilvy Sans / Ogilvy Serif. To use the real
+// brand fonts, swap these for next/font/local with the licensed font files —
+// the --font-sans / --font-serif variables are the only integration point.
+const sans = Archivo({
+  variable: "--font-brand-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const serif = Source_Serif_4({
+  variable: "--font-brand-serif",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Tools Hub",
+  title: "Ogilvy Tools Hub",
   description:
     "One place to discover internal tools, workshops, tips & tricks, and request new tools.",
 };
@@ -26,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

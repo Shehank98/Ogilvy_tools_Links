@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { FEATURES } from "@/lib/features";
 import { Card, EmptyState } from "@/components/Card";
 import { markInterested } from "@/lib/actions/public";
 
@@ -34,7 +36,7 @@ function WorkshopCard({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="font-semibold text-gray-900">{workshop.title}</h3>
-          <p className="mt-0.5 text-sm font-medium text-indigo-700">
+          <p className="mt-0.5 text-sm font-medium text-brand-dark">
             {dateFormat.format(workshop.dateTime)}
           </p>
           {workshop.location && (
@@ -49,7 +51,7 @@ function WorkshopCard({
             <input type="hidden" name="id" value={workshop.id} />
             <button
               type="submit"
-              className="rounded-md border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+              className="rounded-md border border-brand/30 bg-brand-light px-3 py-1.5 text-sm font-medium text-brand-dark hover:bg-brand-light"
             >
               ★ Interested ({workshop.interestedCount})
             </button>
@@ -61,6 +63,7 @@ function WorkshopCard({
 }
 
 export default async function WorkshopsPage() {
+  if (!FEATURES.workshops) redirect("/");
   const now = new Date();
   const [upcoming, past] = await Promise.all([
     prisma.workshop.findMany({

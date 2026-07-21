@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { FEATURES } from "@/lib/features";
 import { EmptyState } from "@/components/Card";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +13,7 @@ const dateFormat = new Intl.DateTimeFormat("en-GB", {
 });
 
 export default async function TipsPage() {
+  if (!FEATURES.tips) redirect("/");
   const posts = await prisma.post.findMany({
     where: { status: "PUBLISHED" },
     orderBy: { publishedAt: "desc" },
@@ -41,7 +44,7 @@ export default async function TipsPage() {
             <Link
               key={post.id}
               href={`/tips/${post.slug}`}
-              className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-indigo-300 hover:shadow-md"
+              className="block rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-brand/40 hover:shadow-md"
             >
               <div className="flex gap-4">
                 {post.coverImageUrl && (
