@@ -16,12 +16,6 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
         {children}
       </main>
-      <footer className="border-t border-black/10 bg-black py-6 text-center">
-        <p className="font-serif text-lg font-bold text-white">Ogilvy</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/50">
-          Tools Hub · internal portal
-        </p>
-      </footer>
     </>
   );
 }
