@@ -46,6 +46,21 @@ export const toolRequestSchema = z.object({
   attachmentUrl: optionalUrl,
 });
 
+export const noticeSchema = z.object({
+  message: z.string().trim().min(1, "Message is required"),
+  type: z.enum(["INFO", "UPDATE", "BUGFIX", "WARNING"]),
+  isActive: z.coerce.boolean().default(false),
+});
+
+export const upcomingSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  bannerUrl: optionalUrl,
+  description: z.string().trim().optional(),
+  category: z.string().trim().optional(),
+  order: z.coerce.number().int("Order must be a whole number").default(0),
+  isActive: z.coerce.boolean().default(false),
+});
+
 export const requestUpdateSchema = z.object({
   status: z.enum(["NEW", "UNDER_REVIEW", "APPROVED", "REJECTED", "BUILT"]),
   adminNotes: z.string().trim().optional(),
