@@ -14,27 +14,31 @@ export type ToolItem = {
   category: string;
 };
 
-function ToolLogo({ tool }: { tool: ToolItem }) {
+function ToolLogoBand({ tool }: { tool: ToolItem }) {
   const src = resolveImageUrl(tool.logoUrl);
   const [failed, setFailed] = useState(false);
   const letter = tool.name.charAt(0).toUpperCase();
 
   if (!src || failed) {
     return (
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand text-lg font-bold text-white">
-        {letter}
+      <div className="flex h-28 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
+        <span className="font-serif text-4xl font-bold text-white/95">
+          {letter}
+        </span>
       </div>
     );
   }
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={src}
-      alt=""
-      referrerPolicy="no-referrer"
-      onError={() => setFailed(true)}
-      className="h-12 w-12 shrink-0 rounded-xl border border-black/5 bg-white object-contain p-1.5"
-    />
+    <div className="flex h-28 items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 p-5">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={`${tool.name} logo`}
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(true)}
+        className="max-h-16 max-w-[75%] object-contain"
+      />
+    </div>
   );
 }
 
@@ -45,33 +49,42 @@ function ToolCard({ tool }: { tool: ToolItem }) {
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => logToolClick(tool.id)}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl sm:p-6"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl"
     >
-      <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-200 group-hover:scale-x-100" />
-      <div className="mb-4 flex items-start gap-3">
-        {FEATURES.toolLogos && <ToolLogo tool={tool} />}
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
-            {tool.name}
-          </h3>
-          <span className="mt-1 inline-flex max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-            {tool.category}
+      {FEATURES.toolLogos && (
+        <div className="relative overflow-hidden border-b border-black/5">
+          <ToolLogoBand tool={tool} />
+          <span
+            aria-hidden
+            className="absolute right-3 top-3 text-white/0 transition group-hover:translate-x-0.5 group-hover:text-neutral-400"
+          >
+            ↗
           </span>
         </div>
-        <span
-          aria-hidden
-          className="text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-brand"
-        >
-          ↗
-        </span>
-      </div>
-      {tool.description ? (
-        <p className="line-clamp-3 text-sm leading-relaxed text-neutral-600">
-          {tool.description}
-        </p>
-      ) : (
-        <p className="text-sm italic text-neutral-400">Open tool →</p>
       )}
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start gap-2">
+          <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-black group-hover:text-brand-dark">
+            {tool.name}
+          </h3>
+          {!FEATURES.toolLogos && (
+            <span
+              aria-hidden
+              className="text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-brand"
+            >
+              ↗
+            </span>
+          )}
+        </div>
+        <span className="mt-1.5 inline-flex w-fit max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+          {tool.category}
+        </span>
+        {tool.description && (
+          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">
+            {tool.description}
+          </p>
+        )}
+      </div>
     </a>
   );
 }
