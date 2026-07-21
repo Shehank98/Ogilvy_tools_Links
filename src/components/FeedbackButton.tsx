@@ -8,6 +8,7 @@ type Props = {
   targetId: string;
   targetName: string;
   variant?: "tool" | "upcoming";
+  animated?: boolean;
   className?: string;
 };
 
@@ -16,6 +17,7 @@ export function FeedbackButton({
   targetId,
   targetName,
   variant = "tool",
+  animated = true,
   className = "",
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -52,9 +54,13 @@ export function FeedbackButton({
         className={`group/fb inline-flex items-center ${className}`}
       >
         <span aria-hidden>💡</span>
-        <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover/fb:ml-1 group-hover/fb:max-w-[8rem] group-hover/fb:opacity-100 group-focus-visible/fb:ml-1 group-focus-visible/fb:max-w-[8rem] group-focus-visible/fb:opacity-100">
-          {label}
-        </span>
+        {animated ? (
+          <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 transition-all duration-300 ease-out group-hover/fb:ml-1 group-hover/fb:max-w-[8rem] group-hover/fb:opacity-100 group-focus-visible/fb:ml-1 group-focus-visible/fb:max-w-[8rem] group-focus-visible/fb:opacity-100">
+            {label}
+          </span>
+        ) : (
+          <span className="ml-1 whitespace-nowrap">{label}</span>
+        )}
       </button>
 
       {open && (

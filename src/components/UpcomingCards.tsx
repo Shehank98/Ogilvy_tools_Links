@@ -70,7 +70,8 @@ function UpcomingCard({ item }: { item: UpcomingItem }) {
             targetId={item.id}
             targetName={item.name}
             variant="upcoming"
-            className="inline-flex items-center gap-1 rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-brand hover:text-brand"
+            animated={false}
+            className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-brand hover:text-brand"
           />
         </div>
       </div>
