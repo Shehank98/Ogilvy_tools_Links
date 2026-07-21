@@ -27,8 +27,8 @@ export function ToolForm({
           />
         </Field>
         <Field
-          label="Logo URL (optional)"
-          hint="Paste a direct image URL, or a Google Drive share link (set to “Anyone with the link”). A lettered placeholder is shown if empty or broken."
+          label="Logo / banner image URL (optional)"
+          hint="Shown as a full-width banner across the top of the card, so a wide landscape image (roughly 2:1, e.g. 800×400) works best. Accepts a direct image URL or a Google Drive share link set to “Anyone with the link”. A branded initial is shown if empty or broken."
         >
           <TextInput
             name="logoUrl"

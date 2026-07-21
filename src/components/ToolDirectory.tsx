@@ -21,24 +21,22 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
 
   if (!src || failed) {
     return (
-      <div className="flex h-28 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
-        <span className="font-serif text-4xl font-bold text-white/95">
+      <div className="flex h-32 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
+        <span className="font-serif text-5xl font-bold text-white/95">
           {letter}
         </span>
       </div>
     );
   }
   return (
-    <div className="flex h-28 items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100 p-5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={`${tool.name} logo`}
-        referrerPolicy="no-referrer"
-        onError={() => setFailed(true)}
-        className="max-h-16 max-w-[75%] object-contain"
-      />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={`${tool.name} logo`}
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+      className="h-32 w-full bg-white object-cover"
+    />
   );
 }
 
