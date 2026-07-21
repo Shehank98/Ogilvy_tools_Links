@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable } from "@/components/AdminTable";
 import { deleteTool, toggleToolActive } from "@/lib/actions/tools";
+import { resolveImageUrl } from "@/lib/image";
 
 export const dynamic = "force-dynamic";
 
@@ -33,8 +34,9 @@ export default async function AdminToolsPage() {
                 {tool.logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={tool.logoUrl}
+                    src={resolveImageUrl(tool.logoUrl) ?? ""}
                     alt=""
+                    referrerPolicy="no-referrer"
                     className="h-7 w-7 rounded object-contain"
                   />
                 ) : (

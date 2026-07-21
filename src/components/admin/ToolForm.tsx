@@ -28,7 +28,7 @@ export function ToolForm({
         </Field>
         <Field
           label="Logo URL (optional)"
-          hint="Paste an image URL; a lettered placeholder is shown if empty"
+          hint="Paste a direct image URL, or a Google Drive share link (set to “Anyone with the link”). A lettered placeholder is shown if empty or broken."
         >
           <TextInput
             name="logoUrl"
