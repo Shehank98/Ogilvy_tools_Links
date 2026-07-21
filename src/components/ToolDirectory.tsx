@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { logToolClick } from "@/lib/actions/public";
 import { resolveImageUrl } from "@/lib/image";
+import { FEATURES } from "@/lib/features";
 
 export type ToolItem = {
   id: string;
@@ -48,7 +49,7 @@ function ToolCard({ tool }: { tool: ToolItem }) {
     >
       <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-brand transition-transform duration-200 group-hover:scale-x-100" />
       <div className="mb-4 flex items-start gap-3">
-        <ToolLogo tool={tool} />
+        {FEATURES.toolLogos && <ToolLogo tool={tool} />}
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
             {tool.name}

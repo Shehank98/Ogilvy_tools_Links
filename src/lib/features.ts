@@ -4,4 +4,7 @@ export const FEATURES = {
   workshops: false,
   tips: false,
   requests: false,
+  // Show tool logos on the public cards. Turned off while logo images are
+  // low-res/inconsistent; flip to true to bring the logo tiles back.
+  toolLogos: false,
 } as const;
