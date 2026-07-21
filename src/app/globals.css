@@ -1,26 +1,82 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: #f9fafb;
+  color: #111827;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Minimal typography for rendered markdown */
+.prose-custom {
+  line-height: 1.7;
+  color: #374151;
+}
+.prose-custom h1,
+.prose-custom h2,
+.prose-custom h3,
+.prose-custom h4 {
+  color: #111827;
+  font-weight: 700;
+  margin: 1.5em 0 0.5em;
+}
+.prose-custom h1 { font-size: 1.5rem; }
+.prose-custom h2 { font-size: 1.25rem; }
+.prose-custom h3 { font-size: 1.1rem; }
+.prose-custom p { margin: 0.75em 0; }
+.prose-custom ul,
+.prose-custom ol {
+  margin: 0.75em 0;
+  padding-left: 1.5em;
+}
+.prose-custom ul { list-style: disc; }
+.prose-custom ol { list-style: decimal; }
+.prose-custom a {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+.prose-custom code {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 0.15em 0.35em;
+  font-size: 0.875em;
+  font-family: var(--font-geist-mono), monospace;
+}
+.prose-custom pre {
+  background: #111827;
+  color: #f9fafb;
+  border-radius: 8px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.prose-custom pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+.prose-custom blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 1em;
+  color: #6b7280;
+  margin: 1em 0;
+}
+.prose-custom table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+.prose-custom th,
+.prose-custom td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.prose-custom img {
+  max-width: 100%;
+  border-radius: 8px;
 }
