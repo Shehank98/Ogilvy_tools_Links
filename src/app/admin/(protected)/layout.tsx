@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { logout } from "@/lib/actions/auth";
+import { AutoRefresh } from "@/components/AutoRefresh";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export default async function AdminLayout({
 
   return (
     <>
+      <AutoRefresh />
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-4">
           <Link href="/admin" className="text-lg font-bold text-brand-dark">

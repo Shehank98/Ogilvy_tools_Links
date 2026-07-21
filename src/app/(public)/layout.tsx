@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Nav } from "@/components/Nav";
 import { NoticeBar } from "@/components/NoticeBar";
+import { AutoRefresh } from "@/components/AutoRefresh";
 import { FEATURES } from "@/lib/features";
 import { prisma } from "@/lib/prisma";
 
@@ -36,6 +37,7 @@ export default async function PublicLayout({
 
   return (
     <>
+      <AutoRefresh />
       <NoticeBar notice={notice} />
       <Nav links={navLinks} />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
