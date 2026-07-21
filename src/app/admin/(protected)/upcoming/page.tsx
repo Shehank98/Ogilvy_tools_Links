@@ -55,6 +55,7 @@ export default async function AdminUpcomingPage() {
           },
           { header: "Category", cell: (item) => item.category ?? "-" },
           { header: "Order", cell: (item) => item.order },
+          { header: "Votes", cell: (item) => `👍 ${item.voteCount}` },
           {
             header: "Status",
             cell: (item) => (

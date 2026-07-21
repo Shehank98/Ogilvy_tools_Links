@@ -50,10 +50,47 @@ model Upcoming {
   category    String?
   order       Int      @default(0)
   isActive    Boolean  @default(true)
+  voteCount   Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([isActive, order])
+}
+
+enum FeedbackTarget {
+  TOOL
+  UPCOMING
+}
+
+enum FeedbackKind {
+  SUGGESTION
+  BUG
+  IDEA
+}
+
+enum FeedbackStatus {
+  NEW
+  REVIEWING
+  PLANNED
+  DONE
+  DISMISSED
+}
+
+model Feedback {
+  id         String         @id @default(cuid())
+  targetType FeedbackTarget
+  targetId   String
+  targetName String
+  kind       FeedbackKind   @default(SUGGESTION)
+  message    String
+  email      String?
+  status     FeedbackStatus @default(NEW)
+  adminNotes String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@index([status])
+  @@index([targetType, targetId])
 }
 
 model Workshop {

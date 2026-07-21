@@ -27,6 +27,7 @@ export default async function HomePage() {
         bannerUrl: true,
         description: true,
         category: true,
+        voteCount: true,
       },
     }),
   ]);

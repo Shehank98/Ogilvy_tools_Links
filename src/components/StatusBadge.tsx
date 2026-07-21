@@ -6,6 +6,10 @@ const styles: Record<string, string> = {
   BUILT: "bg-brand-light text-brand-dark",
   DRAFT: "bg-gray-100 text-gray-600",
   PUBLISHED: "bg-green-50 text-green-700",
+  REVIEWING: "bg-yellow-50 text-yellow-700",
+  PLANNED: "bg-brand-light text-brand-dark",
+  DONE: "bg-green-50 text-green-700",
+  DISMISSED: "bg-gray-100 text-gray-500",
 };
 
 export function StatusBadge({ status }: { status: string }) {

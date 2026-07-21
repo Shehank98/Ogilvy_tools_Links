@@ -61,6 +61,24 @@ export const upcomingSchema = z.object({
   isActive: z.coerce.boolean().default(false),
 });
 
+export const feedbackSchema = z.object({
+  targetType: z.enum(["TOOL", "UPCOMING"]),
+  targetId: z.string().trim().min(1),
+  targetName: z.string().trim().min(1),
+  kind: z.enum(["SUGGESTION", "BUG", "IDEA"]),
+  message: z
+    .string()
+    .trim()
+    .min(3, "Please add a little more detail")
+    .max(2000, "That's a bit too long"),
+  email: z.string().trim().email("Enter a valid email").optional().or(z.literal("")),
+});
+
+export const feedbackUpdateSchema = z.object({
+  status: z.enum(["NEW", "REVIEWING", "PLANNED", "DONE", "DISMISSED"]),
+  adminNotes: z.string().trim().optional(),
+});
+
 export const requestUpdateSchema = z.object({
   status: z.enum(["NEW", "UNDER_REVIEW", "APPROVED", "REJECTED", "BUILT"]),
   adminNotes: z.string().trim().optional(),

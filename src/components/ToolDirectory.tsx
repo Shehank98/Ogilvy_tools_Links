@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { logToolClick } from "@/lib/actions/public";
 import { resolveImageUrl } from "@/lib/image";
 import { FEATURES } from "@/lib/features";
+import { FeedbackButton } from "@/components/FeedbackButton";
 
 export type ToolItem = {
   id: string;
@@ -42,48 +43,41 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
 
 function ToolCard({ tool }: { tool: ToolItem }) {
   return (
-    <a
-      href={tool.link}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => logToolClick(tool.id)}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl"
-    >
-      {FEATURES.toolLogos && (
-        <div className="relative overflow-hidden border-b border-black/5">
-          <ToolLogoBand tool={tool} />
-          <span
-            aria-hidden
-            className="absolute right-3 top-3 text-white/0 transition group-hover:translate-x-0.5 group-hover:text-neutral-400"
-          >
-            ↗
-          </span>
-        </div>
-      )}
-      <div className="flex flex-1 flex-col p-5">
-        <div className="flex items-start gap-2">
-          <h3 className="min-w-0 flex-1 truncate text-base font-semibold text-black group-hover:text-brand-dark">
+    <div className="group relative h-full">
+      <a
+        href={tool.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => logToolClick(tool.id)}
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl"
+      >
+        {FEATURES.toolLogos && (
+          <div className="overflow-hidden border-b border-black/5">
+            <ToolLogoBand tool={tool} />
+          </div>
+        )}
+        <div className="flex flex-1 flex-col p-5">
+          <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
             {tool.name}
           </h3>
-          {!FEATURES.toolLogos && (
-            <span
-              aria-hidden
-              className="text-neutral-300 transition group-hover:translate-x-0.5 group-hover:text-brand"
-            >
-              ↗
-            </span>
+          <span className="mt-1.5 inline-flex w-fit max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
+            {tool.category}
+          </span>
+          {tool.description && (
+            <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">
+              {tool.description}
+            </p>
           )}
         </div>
-        <span className="mt-1.5 inline-flex w-fit max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-          {tool.category}
-        </span>
-        {tool.description && (
-          <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">
-            {tool.description}
-          </p>
-        )}
-      </div>
-    </a>
+      </a>
+      <FeedbackButton
+        targetType="TOOL"
+        targetId={tool.id}
+        targetName={tool.name}
+        variant="tool"
+        className="absolute right-2.5 top-2.5 z-10 rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-600 shadow-sm backdrop-blur transition hover:border-brand hover:text-brand"
+      />
+    </div>
   );
 }
 

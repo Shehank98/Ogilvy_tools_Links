@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { resolveImageUrl } from "@/lib/image";
+import { FeedbackButton } from "@/components/FeedbackButton";
+import { UpcomingVote } from "@/components/UpcomingVote";
 
 export type UpcomingItem = {
   id: string;
@@ -9,6 +11,7 @@ export type UpcomingItem = {
   bannerUrl: string | null;
   description: string | null;
   category: string | null;
+  voteCount: number;
 };
 
 function Banner({ item }: { item: UpcomingItem }) {
@@ -60,6 +63,16 @@ function UpcomingCard({ item }: { item: UpcomingItem }) {
             {item.description}
           </p>
         )}
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-black/5 pt-4">
+          <UpcomingVote id={item.id} initialCount={item.voteCount} />
+          <FeedbackButton
+            targetType="UPCOMING"
+            targetId={item.id}
+            targetName={item.name}
+            variant="upcoming"
+            className="inline-flex items-center gap-1 rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-brand hover:text-brand"
+          />
+        </div>
       </div>
     </div>
   );
