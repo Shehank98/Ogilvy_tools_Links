@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tool {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String?
+  link        String
+  description String?
+  category    String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  clickCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isActive, order])
+}
+
+model Workshop {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  dateTime        DateTime
+  location        String?
+  interestedCount Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([dateTime])
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Post {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  body          String
+  coverImageUrl String?
+  status        PostStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+enum RequestFrequency {
+  DAILY
+  WEEKLY
+  MONTHLY
+}
+
+enum RequestStatus {
+  NEW
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  BUILT
+}
+
+model ToolRequest {
+  id                 String           @id @default(cuid())
+  requesterName      String
+  requesterEmail     String
+  toolName           String
+  taskDescription    String
+  frequency          RequestFrequency
+  estimatedTimeSaved String?
+  attachmentUrl      String?
+  status             RequestStatus    @default(NEW)
+  adminNotes         String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  @@index([requesterEmail])
+  @@index([status])
+}
