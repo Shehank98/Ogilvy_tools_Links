@@ -14,7 +14,7 @@ export default function GlobalError({
           Something went wrong
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          The server couldn&apos;t load this page — usually this means the
+          The server couldn&apos;t load this page. Usually this means the
           database is unreachable or hasn&apos;t been migrated yet. Visit{" "}
           <a href="/api/health" className="text-brand underline">
             /api/health

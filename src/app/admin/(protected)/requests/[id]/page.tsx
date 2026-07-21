@@ -59,7 +59,7 @@ export default async function AdminRequestDetailPage({
             <div>
               <dt className="font-medium text-gray-700">Manual time</dt>
               <dd className="mt-0.5 text-gray-600">
-                {request.estimatedTimeSaved ?? "—"}
+                {request.estimatedTimeSaved ?? "-"}
               </dd>
             </div>
           </div>

@@ -43,7 +43,7 @@ export default async function AdminNoticesPage() {
 
       <AdminTable
         rows={notices}
-        emptyMessage="No notices yet — create one to show a bar on the site."
+        emptyMessage="No notices yet. Create one to show a bar on the site."
         columns={[
           {
             header: "Message",

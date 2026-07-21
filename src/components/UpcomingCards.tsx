@@ -73,7 +73,7 @@ export function UpcomingCards({ items }: { items: UpcomingItem[] }) {
         <h2 className="text-lg font-bold tracking-tight text-black">
           Coming soon
         </h2>
-        <p className="text-sm text-neutral-500">In the works — not live yet.</p>
+        <p className="text-sm text-neutral-500">In the works, not live yet.</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (

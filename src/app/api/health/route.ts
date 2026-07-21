@@ -22,7 +22,7 @@ export async function GET() {
     await prisma.$queryRaw`SELECT 1`;
     checks.databaseConnection = "ok";
   } catch (e) {
-    checks.databaseConnection = `FAILED — ${shortError(e)}`;
+    checks.databaseConnection = `FAILED: ${shortError(e)}`;
   }
 
   if (checks.databaseConnection === "ok") {
@@ -30,7 +30,7 @@ export async function GET() {
       await prisma.tool.count();
       checks.migrations = "ok (tables exist)";
     } catch (e) {
-      checks.migrations = `FAILED — tables missing? Run "npx prisma migrate deploy". ${shortError(e)}`;
+      checks.migrations = `FAILED: tables missing? Run "npx prisma migrate deploy". ${shortError(e)}`;
     }
   } else {
     checks.migrations = "skipped (no database connection)";

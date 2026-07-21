@@ -37,7 +37,7 @@ export default async function TipsPage() {
       </div>
 
       {posts.length === 0 ? (
-        <EmptyState message="No posts published yet — check back soon." />
+        <EmptyState message="No posts published yet. Check back soon." />
       ) : (
         <div className="space-y-4">
           {posts.map((post) => (

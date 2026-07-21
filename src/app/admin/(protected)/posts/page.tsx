@@ -29,7 +29,7 @@ export default async function AdminPostsPage() {
 
       <AdminTable
         rows={posts}
-        emptyMessage="No posts yet — write your first tip or newsletter."
+        emptyMessage="No posts yet. Write your first tip or newsletter."
         columns={[
           {
             header: "Title",
@@ -44,7 +44,7 @@ export default async function AdminPostsPage() {
           {
             header: "Published",
             cell: (post) =>
-              post.publishedAt ? dateFormat.format(post.publishedAt) : "—",
+              post.publishedAt ? dateFormat.format(post.publishedAt) : "-",
           },
           {
             header: "Created",

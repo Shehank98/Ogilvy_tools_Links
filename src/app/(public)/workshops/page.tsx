@@ -88,7 +88,7 @@ export default async function WorkshopsPage() {
 
       <section className="space-y-4">
         {upcoming.length === 0 ? (
-          <EmptyState message="No upcoming workshops scheduled right now — check back soon." />
+          <EmptyState message="No upcoming workshops scheduled right now. Check back soon." />
         ) : (
           upcoming.map((w) => <WorkshopCard key={w.id} workshop={w} />)
         )}

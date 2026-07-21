@@ -30,7 +30,7 @@ export default async function AdminUpcomingPage() {
 
       <AdminTable
         rows={items}
-        emptyMessage="Nothing upcoming yet — add a coming-soon item."
+        emptyMessage="Nothing upcoming yet. Add a coming-soon item."
         columns={[
           {
             header: "Name",
@@ -53,7 +53,7 @@ export default async function AdminUpcomingPage() {
               </div>
             ),
           },
-          { header: "Category", cell: (item) => item.category ?? "—" },
+          { header: "Category", cell: (item) => item.category ?? "-" },
           { header: "Order", cell: (item) => item.order },
           {
             header: "Status",

@@ -33,7 +33,7 @@ export default async function AdminWorkshopsPage() {
 
       <AdminTable
         rows={workshops}
-        emptyMessage="No workshops yet — schedule your first one."
+        emptyMessage="No workshops yet. Schedule your first one."
         columns={[
           {
             header: "Title",
@@ -50,7 +50,7 @@ export default async function AdminWorkshopsPage() {
               </span>
             ),
           },
-          { header: "Location", cell: (w) => w.location ?? "—" },
+          { header: "Location", cell: (w) => w.location ?? "-" },
           { header: "Interested", cell: (w) => w.interestedCount },
           {
             header: "",

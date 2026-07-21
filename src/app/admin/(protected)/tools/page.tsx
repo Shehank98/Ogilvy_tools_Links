@@ -25,7 +25,7 @@ export default async function AdminToolsPage() {
 
       <AdminTable
         rows={tools}
-        emptyMessage="No tools yet — add your first one."
+        emptyMessage="No tools yet. Add your first one."
         columns={[
           {
             header: "Tool",
