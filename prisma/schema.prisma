@@ -16,6 +16,7 @@ model Tool {
   category    String
   order       Int      @default(0)
   isActive    Boolean  @default(true)
+  isBeta      Boolean  @default(false)
   clickCount  Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

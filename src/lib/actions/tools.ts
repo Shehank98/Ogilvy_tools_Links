@@ -21,6 +21,7 @@ export async function saveTool(
     category: formData.get("category"),
     order: formData.get("order") || 0,
     isActive: formData.get("isActive") === "on",
+    isBeta: formData.get("isBeta") === "on",
   });
   if (!parsed.success) return { error: firstZodError(parsed.error) };
 

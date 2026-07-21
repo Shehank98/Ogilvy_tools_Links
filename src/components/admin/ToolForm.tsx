@@ -81,6 +81,15 @@ export function ToolForm({
           />
           Active (visible on the public site)
         </label>
+        <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <input
+            type="checkbox"
+            name="isBeta"
+            defaultChecked={tool ? tool.isBeta : false}
+            className="h-4 w-4 rounded border-gray-300 text-brand focus:ring-brand"
+          />
+          Beta (shows a “Beta” badge warning users it may have issues)
+        </label>
       </ActionForm>
     </div>
   );

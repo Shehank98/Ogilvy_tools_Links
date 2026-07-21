@@ -16,6 +16,7 @@ export default async function HomePage() {
         link: true,
         description: true,
         category: true,
+        isBeta: true,
       },
     }),
     prisma.upcoming.findMany({

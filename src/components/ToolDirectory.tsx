@@ -13,6 +13,7 @@ export type ToolItem = {
   link: string;
   description: string | null;
   category: string;
+  isBeta: boolean;
 };
 
 function ToolLogoBand({ tool }: { tool: ToolItem }) {
@@ -57,9 +58,19 @@ function ToolCard({ tool }: { tool: ToolItem }) {
           </div>
         )}
         <div className="flex flex-1 flex-col p-5">
-          <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
-            {tool.name}
-          </h3>
+          <div className="flex min-w-0 items-center gap-2">
+            <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
+              {tool.name}
+            </h3>
+            {tool.isBeta && (
+              <span
+                title="Beta: still being tested, you may run into errors."
+                className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700"
+              >
+                Beta
+              </span>
+            )}
+          </div>
           <span className="mt-1.5 inline-flex w-fit max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
             {tool.category}
           </span>

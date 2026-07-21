@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Tool" ADD COLUMN "isBeta" BOOLEAN NOT NULL DEFAULT false;

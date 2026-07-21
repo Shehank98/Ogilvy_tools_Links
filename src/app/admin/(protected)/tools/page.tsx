@@ -45,6 +45,11 @@ export default async function AdminToolsPage() {
                   </span>
                 )}
                 <span className="font-medium text-gray-900">{tool.name}</span>
+                {tool.isBeta && (
+                  <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                    Beta
+                  </span>
+                )}
               </div>
             ),
           },

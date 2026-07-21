@@ -15,6 +15,7 @@ export const toolSchema = z.object({
   category: z.string().trim().min(1, "Category is required"),
   order: z.coerce.number().int("Order must be a whole number").default(0),
   isActive: z.coerce.boolean().default(false),
+  isBeta: z.coerce.boolean().default(false),
 });
 
 export const workshopSchema = z.object({
