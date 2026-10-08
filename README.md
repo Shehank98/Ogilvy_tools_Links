@@ -17,6 +17,7 @@ The whole hub sits behind a staff login (switch it off with `FEATURES.userLogin`
 - **Report:** `/report`, a bug / suggestion / idea form (tool, priority, title, details, steps).
 - **My Tickets:** `/tickets`, live progress (Received → In review → Planned → Done), the team's notes and full history. Anything a user sends from a card's 💡 button shows up here too.
 - **Admin:** the existing Feedback inbox now shows ticket numbers and reporters, takes a *note to requester*, keeps a history and can email the requester on each update. Internal notes stay private.
+- **Reports:** *Admin → Feedback* is a tickets console with KPIs (open, resolved, resolution rate, average time to resolve, bugs fixed), a status breakdown and filters (date range with quick presets, type, status, priority, tool, search). **Excel report** and **PDF report** buttons export exactly what is on screen for the chosen date range. The date can mean *date raised*, *date resolved/fixed* or *last updated*. The workbook has Summary, Tickets, Bug fixes, Open bugs and Ticket history sheets; the PDF has a summary page plus bug-fixing details, open bugs and all tickets. Times are UTC. The PDF uses a built-in font, so emoji and non-Latin scripts print as `?` (Excel shows them correctly).
 - **Email** goes through a small Google Apps Script relay, see [`apps-script/README.md`](apps-script/README.md). Without `APPS_SCRIPT_URL` / `APPS_SCRIPT_SECRET`, local dev prints emails to the console.
 
 ## Local development

@@ -29,3 +29,22 @@ export function StatusBadge({
     </span>
   );
 }
+
+const prioStyles: Record<string, string> = {
+  CRITICAL: "bg-red-100 text-red-700 ring-1 ring-red-200",
+  HIGH: "bg-orange-50 text-orange-700 ring-1 ring-orange-200",
+  MEDIUM: "bg-gray-100 text-gray-600",
+  LOW: "bg-gray-50 text-gray-500",
+};
+
+export function PriorityBadge({ priority, label }: { priority: string; label?: string }) {
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${
+        prioStyles[priority] ?? "bg-gray-100 text-gray-600"
+      }`}
+    >
+      {label ?? priority}
+    </span>
+  );
+}
