@@ -15,9 +15,9 @@ export function Nav({
 }) {
   const pathname = usePathname();
   return (
-    <header className="sticky top-0 z-40 border-b border-black/10 bg-white/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-4">
-        <Link href="/" className="flex items-baseline gap-2">
+    <header className="z-40 shrink-0 border-b border-black/10 bg-white/90 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3">
+        <Link href="/" className="order-1 flex items-baseline gap-2">
           <span className="font-serif text-2xl font-bold tracking-tight text-brand">
             Ogilvy
           </span>
@@ -26,7 +26,7 @@ export function Nav({
           </span>
         </Link>
         {links.length > 1 && (
-          <nav className="flex flex-wrap items-center gap-1">
+          <nav className="order-3 flex w-full flex-wrap items-center gap-1 md:order-2 md:w-auto">
             {links.map((link) => {
               const active =
                 link.href === "/"
@@ -56,7 +56,7 @@ export function Nav({
           </nav>
         )}
         {user && (
-          <div className="ml-auto flex items-center gap-3">
+          <div className="order-2 ml-auto flex items-center gap-3 md:order-3">
             <span
               title={user.email}
               className="hidden max-w-[14rem] truncate text-sm text-neutral-500 sm:block"

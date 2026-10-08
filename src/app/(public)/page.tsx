@@ -36,18 +36,8 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="space-y-10">
-      <div className="space-y-6">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h1 className="text-2xl font-bold tracking-tight text-black sm:text-3xl">
-            Every tool. One place<span className="text-brand">.</span>
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Click a card to open the tool in a new tab.
-          </p>
-        </div>
-        <ToolDirectory tools={tools} signedIn={signedIn} />
-      </div>
+    <div className="space-y-6">
+      <ToolDirectory tools={tools} signedIn={signedIn} />
       <UpcomingCards items={upcoming} signedIn={signedIn} />
     </div>
   );

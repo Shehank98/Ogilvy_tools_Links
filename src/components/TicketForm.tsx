@@ -18,7 +18,7 @@ export function TicketForm({
   const bug = kind === "BUG";
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="flex min-h-0 flex-1 flex-col gap-3.5">
       {state?.error && (
         <p key={state.error} role="alert" className="anim-shake rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
@@ -94,7 +94,7 @@ export function TicketForm({
         />
       </label>
 
-      <label className="block text-sm">
+      <label className="flex min-h-32 flex-1 flex-col text-sm lg:min-h-24">
         <span className="mb-1 block font-medium text-gray-700">
           {bug ? "Describe the problem" : "Describe your suggestion"}
         </span>
@@ -103,13 +103,13 @@ export function TicketForm({
           required
           minLength={10}
           maxLength={5000}
-          rows={5}
+          rows={3}
           placeholder={
             bug
               ? "What happened? What did you expect to happen?"
               : "What would you improve, and how would it help you or your team?"
           }
-          className={inputClass}
+          className={`${inputClass} min-h-0 flex-1 resize-none`}
         />
       </label>
 

@@ -47,7 +47,7 @@ export default function RootLayout({
       lang="en"
       className={`${sans.variable} ${serif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="flex h-dvh flex-col overflow-hidden">
         <RegisterSW />
         {children}
       </body>

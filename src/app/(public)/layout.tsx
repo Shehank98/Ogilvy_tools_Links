@@ -15,7 +15,7 @@ const navLinks = [
   ...(FEATURES.requests ? [{ href: "/request", label: "Request a Tool" }] : []),
   ...(FEATURES.userLogin
     ? [
-        { href: "/report", label: "Report" },
+        { href: "/report", label: "Report to us" },
         { href: "/tickets", label: "My Tickets" },
       ]
     : []),
@@ -61,8 +61,12 @@ export default async function PublicLayout({
         user={user ? { name: user.name, email: user.email } : null}
         openTickets={openTickets}
       />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
-        {children}
+      {/* The page itself never scrolls: the header stays put and, only if the
+          content is taller than the window, this area scrolls on its own. */}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto h-full w-full max-w-6xl px-4 py-5">
+          {children}
+        </div>
       </main>
     </>
   );

@@ -12,9 +12,6 @@ const links = [
   { href: "/admin/upcoming", label: "Coming Soon" },
   { href: "/admin/feedback", label: "Feedback" },
   { href: "/admin/notices", label: "Notices" },
-  { href: "/admin/workshops", label: "Workshops" },
-  { href: "/admin/posts", label: "Tips & Tricks" },
-  { href: "/admin/requests", label: "Tool Requests" },
 ];
 
 export default async function AdminLayout({
@@ -27,8 +24,8 @@ export default async function AdminLayout({
   return (
     <>
       <AutoRefresh />
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-4">
+      <header className="shrink-0 border-b border-gray-200 bg-white">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
           <Link href="/admin" className="text-lg font-bold text-brand-dark">
             Tools Hub{" "}
             <span className="rounded bg-brand-light px-1.5 py-0.5 text-xs font-semibold text-brand-dark">
@@ -64,8 +61,8 @@ export default async function AdminLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-        {children}
+      <main className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-6xl px-4 py-6">{children}</div>
       </main>
     </>
   );

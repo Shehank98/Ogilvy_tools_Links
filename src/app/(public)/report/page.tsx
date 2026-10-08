@@ -22,15 +22,15 @@ export default async function ReportPage({
   const defaultToolId = tools.some((t) => t.id === tool) ? tool! : "general";
 
   return (
-    <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.6fr_1fr]">
-      <div className="anim-fade-up rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900">Report a bug or suggestion</h1>
-        <p className="mb-5 mt-1 text-sm text-gray-600">
+    <div className="mx-auto grid max-w-5xl gap-5 lg:h-full lg:min-h-[31rem] lg:grid-cols-[1.6fr_1fr]">
+      <div className="anim-fade-up flex min-h-0 flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-900">Report to us</h1>
+        <p className="mb-4 mt-1 text-sm text-gray-600">
           Found something broken or have an idea? Tell the Automation team.
         </p>
         <TicketForm tools={tools} defaultToolId={defaultToolId} />
       </div>
-      <aside className="anim-fade-up stagger h-fit rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <aside className="anim-fade-up stagger h-fit rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-gray-900">What happens next</h2>
         <ol className="mt-3 space-y-3 text-sm text-gray-600">
           {[

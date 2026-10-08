@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { logToolClick } from "@/lib/actions/public";
 import { resolveImageUrl } from "@/lib/image";
 import { FEATURES } from "@/lib/features";
@@ -104,81 +104,20 @@ export function ToolDirectory({
   tools: ToolItem[];
   signedIn?: boolean;
 }) {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-
-  const categories = useMemo(
-    () => Array.from(new Set(tools.map((t) => t.category))).sort(),
-    [tools]
-  );
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return tools.filter((tool) => {
-      if (category !== "all" && tool.category !== category) return false;
-      if (!q) return true;
-      return (
-        tool.name.toLowerCase().includes(q) ||
-        (tool.description ?? "").toLowerCase().includes(q) ||
-        tool.category.toLowerCase().includes(q)
-      );
-    });
-  }, [tools, search, category]);
-
-  return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative w-full">
-          <span
-            aria-hidden
-            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
-          >
-            ⌕
-          </span>
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search tools…"
-            className="w-full rounded-full border border-black/15 bg-white py-3 pl-10 pr-5 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
-          />
-        </div>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full rounded-full border border-black/15 bg-white px-5 py-3 text-sm shadow-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 sm:w-56"
-        >
-          <option value="all">All categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {tools.length > 0 && (
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-400">
-          {filtered.length} {filtered.length === 1 ? "tool" : "tools"}
-          {category !== "all" && ` in ${category}`}
+  if (tools.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-black/15 bg-white p-12 text-center">
+        <p className="text-sm text-neutral-500">
+          No tools have been added yet. Check back soon.
         </p>
-      )}
-
-      {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-black/15 bg-white p-12 text-center">
-          <p className="text-sm text-neutral-500">
-            {tools.length === 0
-              ? "No tools have been added yet. Check back soon."
-              : "No tools match your search."}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-          {filtered.map((tool, i) => (
-            <ToolCard key={tool.id} tool={tool} signedIn={signedIn} index={i} />
-          ))}
-        </div>
-      )}
+      </div>
+    );
+  }
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      {tools.map((tool, i) => (
+        <ToolCard key={tool.id} tool={tool} signedIn={signedIn} index={i} />
+      ))}
     </div>
   );
 }

@@ -39,8 +39,8 @@ export default async function TicketsPage({
   });
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="mx-auto flex h-full max-w-4xl flex-col gap-4">
+      <div className="flex shrink-0 flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">My Tickets</h1>
           <p className="mt-1 text-sm text-gray-600">
@@ -56,11 +56,12 @@ export default async function TicketsPage({
       </div>
 
       {justRaised && (
-        <p role="status" className="anim-pop rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
+        <p role="status" className="anim-pop shrink-0 rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
           <strong>{justRaised}</strong> raised. A confirmation email is on its way.
         </p>
       )}
 
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-1 pr-1">
       {tickets.length === 0 ? (
         <EmptyState message="You haven't raised any tickets yet." />
       ) : (
@@ -170,6 +171,7 @@ export default async function TicketsPage({
           );
         })
       )}
+      </div>
     </div>
   );
 }

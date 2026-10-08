@@ -5,20 +5,13 @@ import { Card } from "@/components/Card";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [
-    toolCount,
-    workshopCount,
-    postCount,
-    newRequestCount,
-    newTicketCount,
-    userCount,
-    topTools,
-  ] = await Promise.all([
+  const [toolCount, newTicketCount, openBugCount, userCount, topTools] =
+    await Promise.all([
       prisma.tool.count(),
-      prisma.workshop.count(),
-      prisma.post.count(),
-      prisma.toolRequest.count({ where: { status: "NEW" } }),
       prisma.feedback.count({ where: { status: "NEW" } }),
+      prisma.feedback.count({
+        where: { kind: "BUG", status: { notIn: ["DONE", "DISMISSED"] } },
+      }),
       prisma.user.count({ where: { verified: true } }),
       prisma.tool.findMany({
         orderBy: { clickCount: "desc" },
@@ -27,12 +20,10 @@ export default async function AdminDashboardPage() {
       }),
     ]);
 
-  const stats = [
+  const stats: { label: string; value: number; href: string | null }[] = [
     { label: "Tools", value: toolCount, href: "/admin/tools" },
-    { label: "Workshops", value: workshopCount, href: "/admin/workshops" },
-    { label: "Posts", value: postCount, href: "/admin/posts" },
-    { label: "New requests", value: newRequestCount, href: "/admin/requests" },
     { label: "New tickets", value: newTicketCount, href: "/admin/feedback" },
+    { label: "Open bugs", value: openBugCount, href: "/admin/feedback?kind=BUG" },
     { label: "Signed-up users", value: userCount, href: null },
   ];
 
