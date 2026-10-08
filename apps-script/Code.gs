@@ -20,9 +20,9 @@ function doPost(e) {
     var req = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     var props = PropertiesService.getScriptProperties();
 
-    var secret = props.getProperty('MAIL_SECRET');
+    var secret = (props.getProperty('MAIL_SECRET') || '').trim();
     if (!secret) throw new Error('MAIL_SECRET is not set in Script properties.');
-    if (!safeEqual_(String(req.secret || ''), secret)) throw new Error('Unauthorized.');
+    if (!safeEqual_(String(req.secret || '').trim(), secret)) throw new Error('Unauthorized.');
 
     // Health probe from the app: proves the secret matches and that the script is
     // allowed to send mail (reading the quota needs the mail permission). Sends nothing.
@@ -51,6 +51,24 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: String(err && err.message || err) });
   }
+}
+
+/**
+ * Troubleshooting helper: run it from the editor and open View → Logs.
+ * Shows which Script properties exist (names only, never values), whether
+ * MAIL_SECRET is readable, and this project's web app URL, so you can confirm
+ * it is the same URL you pasted into APPS_SCRIPT_URL.
+ */
+function checkSetup() {
+  var props = PropertiesService.getScriptProperties();
+  var names = Object.keys(props.getProperties());
+  var secret = props.getProperty('MAIL_SECRET');
+  Logger.log('Script properties found: ' + (names.length ? names.map(function (n) { return '"' + n + '"'; }).join(', ') : '(none)'));
+  Logger.log(secret
+    ? 'MAIL_SECRET: set (' + secret.length + ' characters' + (secret !== secret.trim() ? ', WARNING: has leading/trailing spaces' : '') + ')'
+    : 'MAIL_SECRET: NOT FOUND. The name must be exactly MAIL_SECRET (capitals, underscore).');
+  Logger.log('This project\'s web app URL: ' + (ScriptApp.getService().getUrl() || '(not deployed as a web app yet)'));
+  Logger.log('Emails left today: ' + MailApp.getRemainingDailyQuota());
 }
 
 /** Run once from the editor to grant the email permission. */

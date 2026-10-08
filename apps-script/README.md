@@ -25,6 +25,13 @@ The Tools Hub needs to send email (sign-up codes, ticket confirmations, status u
 
 After editing `Code.gs`, use **Deploy → Manage deployments → Edit → New version** so the URL serves the new code.
 
+## Troubleshooting: "add the MAIL_SECRET Script property"
+
+1. In the Apps Script editor pick the **`checkSetup`** function and click **Run**, then open **Execution log** (bottom of the editor).
+2. It prints the property names it can see, whether `MAIL_SECRET` is readable, and **this project's web app URL**.
+3. Compare that URL with `APPS_SCRIPT_URL` on Railway. If they differ, Railway is calling a different project (for example an old copy): update `APPS_SCRIPT_URL` to the URL from the log.
+4. If the property name looks different (extra space, wrong case), delete it and add it again as exactly `MAIL_SECRET`.
+
 ## Check it works
 
 Open `https://your-site/api/health` and read the **`mailRelay`** line. It tests the relay without sending an email and tells you what to fix:
