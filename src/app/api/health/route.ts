@@ -28,11 +28,17 @@ export async function GET() {
   }
 
   if (checks.databaseConnection === "ok") {
+    // Probe a table/column from every migration generation, so a database that
+    // is behind (e.g. the sign-in & tickets migration was never run) is caught
+    // here instead of crashing pages later.
     try {
       await prisma.tool.count();
+      await prisma.user.count();
+      await prisma.feedback.findFirst({ select: { ticketNo: true } });
+      await prisma.feedbackEvent.count();
       checks.migrations = "ok (tables exist)";
     } catch (e) {
-      checks.migrations = `FAILED: tables missing? Run "npx prisma migrate deploy". ${shortError(e)}`;
+      checks.migrations = `FAILED: database is behind the code. Run "npx prisma migrate deploy" (see README). ${shortError(e)}`;
     }
   } else {
     checks.migrations = "skipped (no database connection)";
