@@ -36,7 +36,7 @@ export function NoticeBar({ notice }: { notice: NoticeItem | null }) {
   const style = styles[notice.type];
 
   return (
-    <div className={`w-full ${style.bar}`}>
+    <div className={`anim-slide-down w-full ${style.bar}`}>
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5 text-sm">
         <span className="shrink-0 rounded-full bg-white/20 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide">
           {style.label}

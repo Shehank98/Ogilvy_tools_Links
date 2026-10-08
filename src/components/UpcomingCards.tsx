@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { resolveImageUrl } from "@/lib/image";
-import { FeedbackButton } from "@/components/FeedbackButton";
-import { UpcomingVote } from "@/components/UpcomingVote";
 
 export type UpcomingItem = {
   id: string;
@@ -21,8 +19,8 @@ function Banner({ item }: { item: UpcomingItem }) {
 
   if (!src || failed) {
     return (
-      <div className="flex h-20 items-center justify-center bg-gradient-to-br from-neutral-700 to-neutral-900">
-        <span className="font-serif text-3xl font-bold text-white/90">
+      <div className="anim-gradient flex h-20 items-end justify-center bg-gradient-to-br from-neutral-700 via-neutral-900 to-neutral-700">
+        <span className="pb-2 font-serif text-3xl font-bold text-white/90 transition duration-300 group-hover:scale-110">
           {letter}
         </span>
       </div>
@@ -35,62 +33,39 @@ function Banner({ item }: { item: UpcomingItem }) {
       alt={`${item.name} banner`}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
-      className="h-20 w-full bg-white object-cover grayscale"
+      className="h-20 w-full bg-white object-cover grayscale transition duration-500 group-hover:scale-105 group-hover:grayscale-0"
     />
   );
 }
 
-function UpcomingCard({
-  item,
-  signedIn,
-  index,
-}: {
-  item: UpcomingItem;
-  signedIn: boolean;
-  index: number;
-}) {
+// Compact "coming soon" tile: banner and name only.
+function UpcomingCard({ item, index }: { item: UpcomingItem; index: number }) {
   return (
     <div
       style={{ "--i": index } as React.CSSProperties}
-      className="anim-fade-up stagger relative flex h-full cursor-default flex-col overflow-hidden rounded-xl border border-dashed border-black/15 bg-white opacity-95 shadow-sm">
-      <div className="relative overflow-hidden border-b border-black/5">
+      title={item.description ?? item.name}
+      className="anim-fade-up stagger group relative flex h-full cursor-default flex-col overflow-hidden rounded-xl border border-dashed border-black/15 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-black/30 hover:shadow-lg"
+    >
+      <div className="shine relative overflow-hidden border-b border-black/5">
         <Banner item={item} />
-        <span className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+        <span className="anim-float absolute right-2 top-2 rounded-full bg-black/75 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
           Coming soon
         </span>
       </div>
-      <div className="flex flex-1 flex-col p-3" title={item.description ?? item.name}>
+      <div className="px-3 py-2.5">
         <h3 className="truncate text-center text-sm font-semibold text-black">
           {item.name}
         </h3>
-        <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1.5 border-t border-black/5 pt-2.5">
-          <UpcomingVote id={item.id} initialCount={item.voteCount} />
-          <FeedbackButton
-            targetType="UPCOMING"
-            targetId={item.id}
-            targetName={item.name}
-            variant="upcoming"
-            animated={false}
-            hideEmail={signedIn}
-            className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-brand hover:text-brand"
-          />
-        </div>
       </div>
     </div>
   );
 }
 
-export function UpcomingCards({
-  items,
-  signedIn = false,
-}: {
-  items: UpcomingItem[];
-  signedIn?: boolean;
-}) {
+export function UpcomingCards({ items }: { items: UpcomingItem[] }) {
   if (items.length === 0) return null;
   return (
-    <section className="space-y-4">
-      <div className="flex items-baseline gap-3">
+    <section className="space-y-3">
+      <div className="anim-fade-up flex items-baseline gap-3">
         <h2 className="text-lg font-bold tracking-tight text-black">
           Coming soon
         </h2>
@@ -98,7 +73,7 @@ export function UpcomingCards({
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
         {items.map((item, i) => (
-          <UpcomingCard key={item.id} item={item} signedIn={signedIn} index={i} />
+          <UpcomingCard key={item.id} item={item} index={i} />
         ))}
       </div>
     </section>

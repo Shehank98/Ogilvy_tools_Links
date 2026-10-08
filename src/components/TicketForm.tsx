@@ -26,7 +26,7 @@ export function TicketForm({
       )}
 
       <div className="space-y-4">
-        <fieldset>
+        <fieldset style={{ "--i": 0 } as React.CSSProperties} className="anim-fade-up stagger">
           <legend className="mb-1 text-sm font-medium text-gray-700">
             What are you raising?
           </legend>
@@ -57,7 +57,7 @@ export function TicketForm({
           </div>
         </fieldset>
 
-        <div className="grid gap-4 sm:grid-cols-[1fr_11rem]">
+        <div style={{ "--i": 1 } as React.CSSProperties} className="anim-fade-up stagger grid gap-4 sm:grid-cols-[1fr_11rem]">
         <label className="block text-sm">
           <span className="mb-1 block font-medium text-gray-700">Tool affected</span>
           <select name="targetId" defaultValue={defaultToolId} className={inputClass}>
@@ -82,7 +82,7 @@ export function TicketForm({
         </div>
       </div>
 
-      <label className="block text-sm">
+      <label style={{ "--i": 2 } as React.CSSProperties} className="anim-fade-up stagger block text-sm">
         <span className="mb-1 block font-medium text-gray-700">Title</span>
         <input
           name="title"
@@ -94,7 +94,7 @@ export function TicketForm({
         />
       </label>
 
-      <label className="flex min-h-32 flex-1 flex-col text-sm lg:min-h-24">
+      <label style={{ "--i": 3 } as React.CSSProperties} className="anim-fade-up stagger flex min-h-32 flex-1 flex-col text-sm lg:min-h-24">
         <span className="mb-1 block font-medium text-gray-700">
           {bug ? "Describe the problem" : "Describe your suggestion"}
         </span>
@@ -113,7 +113,7 @@ export function TicketForm({
         />
       </label>
 
-      <div className="flex items-center gap-4">
+      <div style={{ "--i": 4 } as React.CSSProperties} className="anim-fade-up stagger flex items-center gap-4">
         <button
           type="submit"
           disabled={pending}

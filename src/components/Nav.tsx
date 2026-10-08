@@ -17,7 +17,7 @@ export function Nav({
   return (
     <header className="z-40 shrink-0 border-b border-black/10 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-8 gap-y-2 px-4 py-3">
-        <Link href="/" className="order-1 flex items-baseline gap-2">
+        <Link href="/" className="wiggle-hover order-1 flex items-baseline gap-2">
           <span className="font-serif text-2xl font-bold tracking-tight text-brand">
             Ogilvy
           </span>

@@ -64,10 +64,10 @@ function ToolCard({
         rel="noopener noreferrer"
         title={tool.description ?? tool.name}
         onClick={() => logToolClick(tool.id)}
-        className="flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-lg active:translate-y-0 active:scale-[0.97]"
+        className="flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-[0_14px_30px_-12px_rgba(238,49,36,0.45)] active:translate-y-0 active:scale-[0.97]"
       >
         {FEATURES.toolLogos && (
-          <div className="overflow-hidden border-b border-black/5">
+          <div className="shine overflow-hidden border-b border-black/5">
             <ToolLogoBand tool={tool} />
           </div>
         )}

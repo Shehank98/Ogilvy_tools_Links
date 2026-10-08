@@ -13,7 +13,7 @@ Internal portal for discovering and launching company tools, browsing workshop s
 The whole hub sits behind a staff login (switch it off with `FEATURES.userLogin` in `src/lib/features.ts`).
 
 - **Create account:** name + `@ogilvy.com` email + password → a 6-digit code is emailed (15 min, 5 tries) → verified and signed in. Password reset uses the same code flow. Passwords are scrypt-hashed, sessions are random tokens stored hashed in an `httpOnly` cookie, and sign-in/code requests are rate-limited.
-- **Tools:** a clean grid of tool tiles (logo and name; click to open) plus Coming Soon cards, notices and the per-card feedback button, tied to the signed-in user. Every screen fits the window: the page itself never scrolls, only the content area does when there is more than fits.
+- **Tools:** a clean grid of tool tiles (logo and name; click to open) plus simple Coming Soon cards (banner and name), notices and the per-card feedback button, tied to the signed-in user. Every screen fits the window: the page itself never scrolls, only the content area does when there is more than fits.
 - **Report to us:** `/report`, a bug / suggestion / idea form (tool, priority, title, details, steps).
 - **My Tickets:** `/tickets`, live progress (Received → In review → Planned → Done), the team's notes and full history. Anything a user sends from a card's 💡 button shows up here too.
 - **Admin:** the existing Feedback inbox now shows ticket numbers and reporters, takes a *note to requester*, keeps a history and can email the requester on each update. Internal notes stay private.

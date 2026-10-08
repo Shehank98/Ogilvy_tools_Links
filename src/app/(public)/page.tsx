@@ -38,7 +38,7 @@ export default async function HomePage() {
   return (
     <div className="space-y-6">
       <ToolDirectory tools={tools} signedIn={signedIn} />
-      <UpcomingCards items={upcoming} signedIn={signedIn} />
+      <UpcomingCards items={upcoming} />
     </div>
   );
 }

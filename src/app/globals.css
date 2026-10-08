@@ -159,6 +159,73 @@ button:not(:disabled):active { transform: scale(0.97); }
 details[open] > :not(summary) { animation: fade-up 0.3s ease-out both; }
 details > summary { list-style-position: inside; }
 
+/* ---- Extra polish --------------------------------------------------- */
+@keyframes shine {
+  from { transform: translateX(-130%) skewX(-18deg); }
+  to { transform: translateX(260%) skewX(-18deg); }
+}
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(40px, -30px) scale(1.12); }
+  66% { transform: translate(-30px, 24px) scale(0.94); }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes skeleton {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-4deg) scale(1.05); }
+  75% { transform: rotate(4deg) scale(1.05); }
+}
+
+.anim-gradient { background-size: 220% 220%; animation: gradient-shift 9s ease-in-out infinite; }
+.anim-float { animation: float 3s ease-in-out infinite; }
+.anim-slide-down { animation: slide-down 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-drift { animation: drift 16s ease-in-out infinite; }
+
+/* A light sweep across the element when its tile (or itself) is hovered. */
+.shine { position: relative; overflow: hidden; }
+.shine::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: translateX(-130%) skewX(-18deg); pointer-events: none;
+}
+.group:hover .shine::after, .shine:hover::after { animation: shine 0.85s ease; }
+
+/* Same sweep on every primary (red) button. */
+button.bg-brand:not(:disabled), a.bg-brand { position: relative; overflow: hidden; }
+button.bg-brand:not(:disabled)::after, a.bg-brand::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: translateX(-130%) skewX(-18deg); pointer-events: none;
+}
+button.bg-brand:not(:disabled):hover::after, a.bg-brand:hover::after { animation: shine 0.8s ease; }
+
+/* Loading skeleton. */
+.skeleton {
+  background: linear-gradient(90deg, #ececec 30%, #f6f6f6 45%, #ececec 60%);
+  background-size: 300% 100%; animation: skeleton 1.4s ease-in-out infinite; border-radius: 0.75rem;
+}
+
+/* Soft focus glow on fields. */
+input:not([type="checkbox"]):not([type="radio"]), select, textarea { transition: border-color 0.2s, box-shadow 0.2s; }
+input:not([type="checkbox"]):not([type="radio"]):focus, select:focus, textarea:focus { box-shadow: 0 0 0 4px rgba(238, 49, 36, 0.12); }
+
+.wiggle-hover:hover { animation: wiggle 0.5s ease; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

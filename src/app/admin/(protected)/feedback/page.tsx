@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/Card";
+import { CountUp } from "@/components/CountUp";
 import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
 import {
   filtersToQuery,
@@ -8,7 +9,6 @@ import {
   loadTargets,
   loadTickets,
   parseFilters,
-  pct,
   summarize,
   type FeedbackFilters,
 } from "@/lib/feedback-report";
@@ -54,16 +54,25 @@ function Stat({
   value,
   sub,
   accent,
+  index = 0,
+  suffix,
 }: {
   label: string;
   value: string | number;
   sub?: string;
   accent?: boolean;
+  index?: number;
+  suffix?: string;
 }) {
   return (
-    <Card className={`!p-4 ${accent ? "border-t-4 border-t-brand" : ""}`}>
+    <Card
+      style={{ "--i": index } as React.CSSProperties}
+      className={`anim-fade-up stagger !p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-md ${accent ? "border-t-4 border-t-brand" : ""}`}
+    >
       <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
+      <p className="mt-1 text-2xl font-bold text-gray-900">
+        {typeof value === "number" ? <CountUp to={value} suffix={suffix} /> : value}
+      </p>
       {sub && <p className="mt-0.5 text-xs text-gray-500">{sub}</p>}
     </Card>
   );
@@ -211,12 +220,12 @@ export default async function AdminFeedbackPage({
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <Stat label="Total tickets" value={summary.total} sub={`${summary.bugs.total} bugs · ${summary.suggestions} suggestions/ideas`} />
-        <Stat label="Open" value={summary.open} sub={`${summary.urgentOpen} critical / high`} accent={summary.urgentOpen > 0} />
-        <Stat label="Resolved" value={summary.resolved} sub={`${summary.dismissed} closed without action`} />
-        <Stat label="Resolution rate" value={pct(summary.resolutionRate)} sub="of tickets not closed" />
-        <Stat label="Avg time to resolve" value={fmtDuration(summary.avgResolveMs)} sub={`median ${fmtDuration(summary.medianResolveMs)}`} />
-        <Stat label="Bugs fixed" value={`${summary.bugs.resolved} / ${summary.bugs.total}`} sub={`avg fix ${fmtDuration(summary.bugs.avgFixMs)}`} />
+        <Stat index={0} label="Total tickets" value={summary.total} sub={`${summary.bugs.total} bugs · ${summary.suggestions} suggestions/ideas`} />
+        <Stat index={1} label="Open" value={summary.open} sub={`${summary.urgentOpen} critical / high`} accent={summary.urgentOpen > 0} />
+        <Stat index={2} label="Resolved" value={summary.resolved} sub={`${summary.dismissed} closed without action`} />
+        <Stat index={3} label="Resolution rate" value={Math.round(summary.resolutionRate * 100)} suffix="%" sub="of tickets not closed" />
+        <Stat index={4} label="Avg time to resolve" value={fmtDuration(summary.avgResolveMs)} sub={`median ${fmtDuration(summary.medianResolveMs)}`} />
+        <Stat index={5} label="Bugs fixed" value={`${summary.bugs.resolved} / ${summary.bugs.total}`} sub={`avg fix ${fmtDuration(summary.bugs.avgFixMs)}`} />
       </div>
 
       {/* Breakdowns */}
@@ -228,12 +237,12 @@ export default async function AdminFeedbackPage({
           ) : (
             <>
               <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-gray-100">
-                {summary.byStatus.filter((s) => s.count).map((s) => (
+                {summary.byStatus.filter((s) => s.count).map((s, i) => (
                   <div
                     key={s.key}
                     title={`${s.label}: ${s.count}`}
-                    className={STATUS_BAR[s.key]}
-                    style={{ width: `${(s.count / summary.total) * 100}%` }}
+                    className={`anim-grow-x ${STATUS_BAR[s.key]}`}
+                    style={{ width: `${(s.count / summary.total) * 100}%`, animationDelay: `${0.1 + i * 0.12}s` }}
                   />
                 ))}
               </div>
@@ -298,8 +307,12 @@ export default async function AdminFeedbackPage({
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {visible.map((t) => (
-                <tr key={t.id} className="hover:bg-gray-50">
+              {visible.map((t, i) => (
+                <tr
+                  key={t.id}
+                  style={{ "--i": i } as React.CSSProperties}
+                  className="anim-fade-up stagger transition-colors hover:bg-red-50/40"
+                >
                   <td className="whitespace-nowrap px-4 py-3 font-mono text-xs font-semibold text-gray-500">{t.code}</td>
                   <td className="px-4 py-3">
                     <span className={`rounded px-1.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${t.kind === "BUG" ? "bg-gray-900 text-white" : "border border-gray-900 text-gray-900"}`}>

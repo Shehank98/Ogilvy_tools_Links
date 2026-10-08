@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/Card";
+import { CountUp } from "@/components/CountUp";
 
 export const dynamic = "force-dynamic";
 
@@ -32,10 +33,15 @@ export default async function AdminDashboardPage() {
       <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {stats.map((stat) => {
+        {stats.map((stat, i) => {
           const card = (
-            <Card className={stat.href ? "transition hover:border-brand/40" : ""}>
-              <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+            <Card
+              style={{ "--i": i } as React.CSSProperties}
+              className={`anim-fade-up stagger transition duration-300 hover:-translate-y-0.5 hover:shadow-md ${stat.href ? "hover:border-brand/40" : ""}`}
+            >
+              <p className="text-3xl font-bold text-gray-900">
+                <CountUp to={stat.value} />
+              </p>
               <p className="mt-1 text-sm text-gray-500">{stat.label}</p>
             </Card>
           );
@@ -61,7 +67,8 @@ export default async function AdminDashboardPage() {
               {topTools.map((tool, i) => (
                 <li
                   key={tool.id}
-                  className="flex items-center justify-between py-2 text-sm"
+                  style={{ "--i": i + 4 } as React.CSSProperties}
+                  className="anim-slide-in stagger flex items-center justify-between py-2 text-sm"
                 >
                   <span className="text-gray-700">
                     <span className="mr-2 text-gray-400">{i + 1}.</span>

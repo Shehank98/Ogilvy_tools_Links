@@ -46,19 +46,6 @@ export async function submitFeedback(
   };
 }
 
-export async function voteUpcoming(formData: FormData): Promise<void> {
-  const id = String(formData.get("id"));
-  try {
-    await prisma.upcoming.update({
-      where: { id },
-      data: { voteCount: { increment: 1 } },
-    });
-    revalidatePath("/");
-  } catch {
-    // Ignore votes for items that no longer exist.
-  }
-}
-
 export async function updateFeedback(
   id: string,
   _prev: ActionState,
