@@ -93,3 +93,77 @@ h2 {
   max-width: 100%;
   border-radius: 8px;
 }
+
+/* ------------------------------------------------------------------ */
+/* Motion. Small, quick and purposeful; all of it is off for visitors  */
+/* who ask their OS to reduce motion (see the media query at the end). */
+/* ------------------------------------------------------------------ */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop {
+  0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+  70% { opacity: 1; transform: scale(1.015); }
+  100% { transform: none; }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-7px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(238, 49, 36, 0.45); }
+  100% { box-shadow: 0 0 0 9px rgba(238, 49, 36, 0); }
+}
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+  30% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.28); }
+}
+@keyframes draw-check { to { stroke-dashoffset: 0; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.anim-fade { animation: fade-in 0.2s ease-out both; }
+.anim-fade-up { animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-slide-in { animation: slide-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-pop { animation: pop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-shake { animation: shake 0.42s ease-in-out; }
+.anim-grow-x { transform-origin: left; animation: grow-x 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.anim-pulse-ring { animation: pulse-ring 1.8s ease-out infinite; }
+.anim-fade-up-glow {
+  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both, glow 1.6s ease-out 0.5s 2;
+}
+.anim-check { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw-check 0.5s 0.15s ease-out forwards; }
+
+/* Staggered entrance: set style={{ "--i": index }} on each item. */
+.stagger { animation-delay: calc(min(var(--i, 0), 12) * 55ms); }
+
+/* Press feedback on every button, and a spinner for pending submits. */
+button:not(:disabled) { transition-property: transform, background-color, border-color, color, box-shadow, opacity; transition-duration: 0.15s; }
+button:not(:disabled):active { transform: scale(0.97); }
+.spinner {
+  display: inline-block; width: 0.9em; height: 0.9em; margin-right: 0.5em; vertical-align: -0.1em;
+  border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* Expanding <details> (ticket history). */
+details[open] > :not(summary) { animation: fade-up 0.3s ease-out both; }
+details > summary { list-style-position: inside; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

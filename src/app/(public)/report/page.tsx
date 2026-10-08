@@ -23,14 +23,14 @@ export default async function ReportPage({
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-[1.6fr_1fr]">
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="anim-fade-up rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-bold text-gray-900">Report a bug or suggestion</h1>
         <p className="mb-5 mt-1 text-sm text-gray-600">
           Found something broken or have an idea? Tell the Automation team.
         </p>
         <TicketForm tools={tools} defaultToolId={defaultToolId} />
       </div>
-      <aside className="h-fit rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <aside className="anim-fade-up stagger h-fit rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-gray-900">What happens next</h2>
         <ol className="mt-3 space-y-3 text-sm text-gray-600">
           {[
@@ -38,7 +38,11 @@ export default async function ReportPage({
             ["The Automation team reviews", "and sets a status."],
             ["You follow progress", "under My Tickets and by email."],
           ].map(([b, t], i) => (
-            <li key={b} className="flex gap-3">
+            <li
+              key={b}
+              style={{ "--i": i + 2 } as React.CSSProperties}
+              className="anim-fade-up stagger flex gap-3"
+            >
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black text-xs font-bold text-white">
                 {i + 1}
               </span>

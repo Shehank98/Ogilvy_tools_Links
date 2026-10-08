@@ -9,7 +9,7 @@ export default async function LoginPage() {
   if (!FEATURES.userLogin || (await getCurrentUser())) redirect("/");
   return (
     <div className="grid items-center gap-10 md:grid-cols-[1.1fr_1fr]">
-      <div>
+      <div className="anim-fade-up">
         <div className="mb-6 flex items-baseline gap-2">
           <span className="font-serif text-4xl font-bold tracking-tight text-brand">
             Ogilvy

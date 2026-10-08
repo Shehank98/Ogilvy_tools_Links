@@ -44,7 +44,9 @@ export function Nav({
                 >
                   {link.label}
                   {link.href === "/tickets" && openTickets > 0 && (
-                    <span className="ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-bold text-white">
+                    <span
+                      key={openTickets}
+                      className="anim-pop ml-1.5 inline-flex min-w-5 items-center justify-center rounded-full bg-brand px-1.5 text-[11px] font-bold text-white">
                       {openTickets}
                     </span>
                   )}

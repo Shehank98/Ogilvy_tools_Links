@@ -68,11 +68,11 @@ export function FeedbackButton({
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          className="anim-fade fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-[2px] sm:items-center"
           onClick={() => setOpen(false)}
         >
           <div
-            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+            className="anim-pop w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
@@ -93,9 +93,22 @@ export function FeedbackButton({
             </div>
 
             {state?.success ? (
-              <p className="rounded-lg bg-green-50 px-4 py-6 text-center text-sm font-medium text-green-700">
+              <div className="anim-pop rounded-lg bg-green-50 px-4 py-6 text-center text-sm font-medium text-green-700">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="mx-auto mb-2 h-10 w-10 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <circle cx="12" cy="12" r="10" className="opacity-30" />
+                  <path d="M7 12.5l3.2 3.2L17 9" className="anim-check" />
+                </svg>
                 {state.success}
-              </p>
+              </div>
             ) : (
               <form action={formAction} className="space-y-4">
                 <input type="hidden" name="targetType" value={targetType} />
@@ -103,7 +116,10 @@ export function FeedbackButton({
                 <input type="hidden" name="targetName" value={targetName} />
 
                 {state?.error && (
-                  <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                  <p
+                    key={state.error}
+                    className="anim-shake rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
+                  >
                     {state.error}
                   </p>
                 )}
@@ -164,7 +180,7 @@ export function FeedbackButton({
                   disabled={pending}
                   className="w-full rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-dark disabled:opacity-50"
                 >
-                  {pending ? "Sending…" : "Send feedback"}
+                  {pending ? (<><span className="spinner" />Sending…</>) : "Send feedback"}
                 </button>
               </form>
             )}

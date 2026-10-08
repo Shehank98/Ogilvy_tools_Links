@@ -56,7 +56,7 @@ export default async function TicketsPage({
       </div>
 
       {justRaised && (
-        <p role="status" className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
+        <p role="status" className="anim-pop rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">
           <strong>{justRaised}</strong> raised. A confirmation email is on its way.
         </p>
       )}
@@ -64,15 +64,18 @@ export default async function TicketsPage({
       {tickets.length === 0 ? (
         <EmptyState message="You haven't raised any tickets yet." />
       ) : (
-        tickets.map((t) => {
+        tickets.map((t, n) => {
           const code = ticketCode(t.ticketNo);
           const idx = PROGRESS_STEPS.indexOf(t.status);
           const closed = t.status === "DISMISSED";
           return (
             <article
               key={t.id}
-              className={`rounded-xl border bg-white p-5 shadow-sm ${
-                code === justRaised ? "border-green-300" : "border-gray-200"
+              style={{ "--i": n } as React.CSSProperties}
+              className={`stagger rounded-xl border bg-white p-5 shadow-sm transition-shadow hover:shadow-md ${
+                code === justRaised
+                  ? "anim-fade-up-glow border-green-300"
+                  : "anim-fade-up border-gray-200"
               }`}
             >
               <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -114,8 +117,9 @@ export default async function TicketsPage({
                       {i > 0 && (
                         <span
                           className={`absolute left-[-50%] top-[6px] h-0.5 w-full ${
-                            i <= idx ? "bg-black" : "bg-gray-200"
+                            i <= idx ? "anim-grow-x bg-black" : "bg-gray-200"
                           }`}
+                          style={{ animationDelay: `${0.15 + i * 0.12}s` }}
                         />
                       )}
                       <span
@@ -123,7 +127,7 @@ export default async function TicketsPage({
                           i < idx
                             ? "border-black bg-black"
                             : i === idx
-                              ? "border-brand bg-brand ring-4 ring-brand/15"
+                              ? "anim-pulse-ring border-brand bg-brand"
                               : "border-gray-300 bg-white"
                         }`}
                       />

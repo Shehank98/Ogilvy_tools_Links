@@ -24,7 +24,7 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
   if (!src || failed) {
     return (
       <div className="flex h-32 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
-        <span className="font-serif text-5xl font-bold text-white/95">
+        <span className="font-serif text-5xl font-bold text-white/95 transition duration-300 group-hover:scale-110">
           {letter}
         </span>
       </div>
@@ -37,20 +37,31 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
       alt={`${tool.name} logo`}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
-      className="h-32 w-full bg-white object-cover"
+      className="h-32 w-full bg-white object-cover transition duration-500 group-hover:scale-105"
     />
   );
 }
 
-function ToolCard({ tool, signedIn }: { tool: ToolItem; signedIn: boolean }) {
+function ToolCard({
+  tool,
+  signedIn,
+  index,
+}: {
+  tool: ToolItem;
+  signedIn: boolean;
+  index: number;
+}) {
   return (
-    <div className="group relative h-full">
+    <div
+      className="anim-fade-up stagger group relative h-full"
+      style={{ "--i": index } as React.CSSProperties}
+    >
       <a
         href={tool.link}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => logToolClick(tool.id)}
-        className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl"
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl active:translate-y-0 active:scale-[0.98]"
       >
         {FEATURES.toolLogos && (
           <div className="overflow-hidden border-b border-black/5">
@@ -170,8 +181,8 @@ export function ToolDirectory({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} signedIn={signedIn} />
+          {filtered.map((tool, i) => (
+            <ToolCard key={tool.id} tool={tool} signedIn={signedIn} index={i} />
           ))}
         </div>
       )}

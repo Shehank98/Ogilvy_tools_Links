@@ -40,9 +40,19 @@ function Banner({ item }: { item: UpcomingItem }) {
   );
 }
 
-function UpcomingCard({ item, signedIn }: { item: UpcomingItem; signedIn: boolean }) {
+function UpcomingCard({
+  item,
+  signedIn,
+  index,
+}: {
+  item: UpcomingItem;
+  signedIn: boolean;
+  index: number;
+}) {
   return (
-    <div className="relative flex h-full cursor-default flex-col overflow-hidden rounded-2xl border border-dashed border-black/15 bg-white opacity-95 shadow-sm">
+    <div
+      style={{ "--i": index } as React.CSSProperties}
+      className="anim-fade-up stagger relative flex h-full cursor-default flex-col overflow-hidden rounded-2xl border border-dashed border-black/15 bg-white opacity-95 shadow-sm">
       <div className="relative overflow-hidden border-b border-black/5">
         <Banner item={item} />
         <span className="absolute right-3 top-3 rounded-full bg-black/70 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-white">
@@ -97,8 +107,8 @@ export function UpcomingCards({
         <p className="text-sm text-neutral-500">In the works, not live yet.</p>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {items.map((item) => (
-          <UpcomingCard key={item.id} item={item} signedIn={signedIn} />
+        {items.map((item, i) => (
+          <UpcomingCard key={item.id} item={item} signedIn={signedIn} index={i} />
         ))}
       </div>
     </section>

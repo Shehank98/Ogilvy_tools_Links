@@ -80,7 +80,7 @@ export function AuthPanel({ domain }: { domain: string }) {
   const tabs = mode === "login" || mode === "register";
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
+    <div className="anim-pop rounded-2xl border border-black/10 bg-white p-6 shadow-sm">
       {tabs && (
         <div className="-mt-1 mb-5 flex border-b border-neutral-200">
           {(["login", "register"] as const).map((m) => (
@@ -98,10 +98,11 @@ export function AuthPanel({ domain }: { domain: string }) {
         </div>
       )}
 
-      {error && <p role="alert" className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
-      {info && !error && <p role="status" className="mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{info}</p>}
+      {error && <p key={error} role="alert" className="anim-shake mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+      {info && !error && <p role="status" className="anim-fade-up mb-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">{info}</p>}
 
       {mode === "login" && (
+        <div key="login" className="anim-slide-in">
         <form className="space-y-4" onSubmit={form((fd) => { setEmail(val(fd, "email")); run(() => loginUser({ email: val(fd, "email"), password: raw(fd, "password") })); })}>
           <Field label="Ogilvy email">
             <input name="email" type="email" required autoComplete="username" placeholder={`firstname.lastname@${domain}`} defaultValue={email} className={input} />
@@ -109,15 +110,17 @@ export function AuthPanel({ domain }: { domain: string }) {
           <Field label="Password">
             <input name="password" type="password" required autoComplete="current-password" className={input} />
           </Field>
-          <button type="submit" disabled={pending} className={primary}>{pending ? "Signing in…" : "Sign in"}</button>
+          <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Signing in…</>) : "Sign in"}</button>
           <div className="flex justify-between">
             <button type="button" className={linkBtn} onClick={() => go("forgot")}>Forgot password?</button>
             <button type="button" className={linkBtn} onClick={() => go("register")}>New here? Create an account</button>
           </div>
         </form>
+        </div>
       )}
 
       {mode === "register" && (
+        <div key="register" className="anim-slide-in">
         <form
           className="space-y-4"
           onSubmit={form((fd) => {
@@ -133,11 +136,13 @@ export function AuthPanel({ domain }: { domain: string }) {
             <input name="password" type="password" required autoComplete="new-password" className={input} />
           </Field>
           <Field label="Confirm password"><input name="confirm" type="password" required autoComplete="new-password" className={input} /></Field>
-          <button type="submit" disabled={pending} className={primary}>{pending ? "Creating…" : "Create account & send code"}</button>
+          <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Creating…</>) : "Create account & send code"}</button>
         </form>
+        </div>
       )}
 
       {mode === "verify" && (
+        <div key="verify" className="anim-slide-in">
         <div className="space-y-4">
           <div>
             <h2 className="font-serif text-xl font-bold text-black">Check your inbox</h2>
@@ -147,7 +152,7 @@ export function AuthPanel({ domain }: { domain: string }) {
             <Field label="6-digit code">
               <input name="code" inputMode="numeric" pattern="\d{6}" maxLength={6} required autoFocus autoComplete="one-time-code" placeholder="000000" className={`${input} text-center text-xl font-bold tracking-[0.4em]`} />
             </Field>
-            <button type="submit" disabled={pending} className={primary}>{pending ? "Verifying…" : "Verify & continue"}</button>
+            <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Verifying…</>) : "Verify & continue"}</button>
           </form>
           <div className="flex justify-between">
             <button type="button" className={linkBtn} disabled={pending || cooldown > 0} onClick={() => run(() => resendVerification(email), () => setCooldown(30))}>
@@ -156,21 +161,25 @@ export function AuthPanel({ domain }: { domain: string }) {
             <button type="button" className={linkBtn} onClick={() => go("register")}>Use a different email</button>
           </div>
         </div>
+        </div>
       )}
 
       {mode === "forgot" && (
+        <div key="forgot" className="anim-slide-in">
         <form className="space-y-4" onSubmit={form((fd) => { setEmail(val(fd, "email")); run(() => requestPasswordReset(val(fd, "email"))); })}>
           <div>
             <h2 className="font-serif text-xl font-bold text-black">Reset your password</h2>
             <p className="mt-1 text-sm text-neutral-500">We&apos;ll email you a code to choose a new one.</p>
           </div>
           <Field label="Ogilvy email"><input name="email" type="email" required autoComplete="email" defaultValue={email} className={input} /></Field>
-          <button type="submit" disabled={pending} className={primary}>{pending ? "Sending…" : "Email me a reset code"}</button>
+          <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Sending…</>) : "Email me a reset code"}</button>
           <button type="button" className={linkBtn} onClick={() => go("login")}>Back to sign in</button>
         </form>
+        </div>
       )}
 
       {mode === "reset" && (
+        <div key="reset" className="anim-slide-in">
         <form
           className="space-y-4"
           onSubmit={form((fd) => {
@@ -183,9 +192,10 @@ export function AuthPanel({ domain }: { domain: string }) {
           <Field label="Reset code"><input name="code" inputMode="numeric" pattern="\d{6}" maxLength={6} required autoFocus autoComplete="one-time-code" placeholder="000000" className={`${input} text-center text-xl font-bold tracking-[0.4em]`} /></Field>
           <Field label="New password" hint="At least 10 characters, with a letter and a number."><input name="password" type="password" required autoComplete="new-password" className={input} /></Field>
           <Field label="Confirm new password"><input name="confirm" type="password" required autoComplete="new-password" className={input} /></Field>
-          <button type="submit" disabled={pending} className={primary}>{pending ? "Saving…" : "Update password"}</button>
+          <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Saving…</>) : "Update password"}</button>
           <button type="button" className={linkBtn} onClick={() => go("forgot")}>Start again</button>
         </form>
+        </div>
       )}
     </div>
   );

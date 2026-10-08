@@ -20,7 +20,7 @@ export function TicketForm({
   return (
     <form action={formAction} className="space-y-4">
       {state?.error && (
-        <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p key={state.error} role="alert" className="anim-shake rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
         </p>
       )}
@@ -40,7 +40,7 @@ export function TicketForm({
             ).map(([value, label]) => (
               <label
                 key={value}
-                className={`cursor-pointer px-3.5 py-2 text-sm font-semibold ${
+                className={`cursor-pointer px-3.5 py-2 text-sm font-semibold transition-colors duration-200 ${
                   kind === value ? "bg-black text-white" : "bg-white text-black hover:bg-neutral-100"
                 }`}
               >
@@ -115,7 +115,7 @@ export function TicketForm({
       </label>
 
       {bug && (
-        <label className="block text-sm">
+        <label className="anim-fade-up block text-sm">
           <span className="mb-1 block font-medium text-gray-700">
             Steps to reproduce <span className="font-normal text-gray-400">(optional)</span>
           </span>
@@ -135,7 +135,7 @@ export function TicketForm({
           disabled={pending}
           className="rounded-md bg-brand px-5 py-2 text-sm font-medium text-white hover:bg-brand-dark disabled:opacity-50"
         >
-          {pending ? "Submitting…" : "Submit ticket"}
+          {pending ? (<><span className="spinner" />Submitting…</>) : "Submit ticket"}
         </button>
         <span className="text-xs text-gray-500">
           You&apos;ll get a confirmation email with your ticket number.
