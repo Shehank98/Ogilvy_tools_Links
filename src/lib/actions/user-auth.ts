@@ -44,7 +44,13 @@ async function issueCode(email: string, purpose: EmailCodePurpose, name: string)
   let windowStart = now;
   if (existing && now.getTime() - existing.windowStart.getTime() < 3_600_000) {
     if (existing.sendCount >= CODES_PER_HOUR) {
-      throw new UserError("Too many code requests. Please try again in an hour.");
+      const mins = Math.max(
+        1,
+        Math.ceil((existing.windowStart.getTime() + 3_600_000 - now.getTime()) / 60_000)
+      );
+      throw new UserError(
+        `Too many code requests. Please try again in ${mins} minute${mins === 1 ? "" : "s"}.`
+      );
     }
     sendCount = existing.sendCount + 1;
     windowStart = existing.windowStart;
@@ -67,6 +73,26 @@ async function issueCode(email: string, purpose: EmailCodePurpose, name: string)
     await sendCodeEmail(email, name, purpose, code);
   } catch (e) {
     console.error("[auth] could not send code email:", e);
+    // A send that failed must not use up the hourly allowance (or leave a code
+    // nobody received): put the previous state back.
+    if (existing) {
+      await prisma.emailCode
+        .update({
+          where: { id: existing.id },
+          data: {
+            codeHash: existing.codeHash,
+            expiresAt: existing.expiresAt,
+            attempts: existing.attempts,
+            sendCount: existing.sendCount,
+            windowStart: existing.windowStart,
+          },
+        })
+        .catch(() => {});
+    } else {
+      await prisma.emailCode
+        .deleteMany({ where: { email, purpose } })
+        .catch(() => {});
+    }
     throw new UserError("We couldn't send the email just now. Please try again shortly.");
   }
 }
