@@ -40,7 +40,7 @@ function Banner({ item }: { item: UpcomingItem }) {
   );
 }
 
-function UpcomingCard({ item }: { item: UpcomingItem }) {
+function UpcomingCard({ item, signedIn }: { item: UpcomingItem; signedIn: boolean }) {
   return (
     <div className="relative flex h-full cursor-default flex-col overflow-hidden rounded-2xl border border-dashed border-black/15 bg-white opacity-95 shadow-sm">
       <div className="relative overflow-hidden border-b border-black/5">
@@ -71,6 +71,7 @@ function UpcomingCard({ item }: { item: UpcomingItem }) {
             targetName={item.name}
             variant="upcoming"
             animated={false}
+            hideEmail={signedIn}
             className="rounded-full border border-black/15 px-3 py-1 text-xs font-semibold text-neutral-600 transition hover:border-brand hover:text-brand"
           />
         </div>
@@ -79,7 +80,13 @@ function UpcomingCard({ item }: { item: UpcomingItem }) {
   );
 }
 
-export function UpcomingCards({ items }: { items: UpcomingItem[] }) {
+export function UpcomingCards({
+  items,
+  signedIn = false,
+}: {
+  items: UpcomingItem[];
+  signedIn?: boolean;
+}) {
   if (items.length === 0) return null;
   return (
     <section className="space-y-4">
@@ -91,7 +98,7 @@ export function UpcomingCards({ items }: { items: UpcomingItem[] }) {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
-          <UpcomingCard key={item.id} item={item} />
+          <UpcomingCard key={item.id} item={item} signedIn={signedIn} />
         ))}
       </div>
     </section>

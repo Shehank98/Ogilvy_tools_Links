@@ -61,6 +61,7 @@ model Upcoming {
 enum FeedbackTarget {
   TOOL
   UPCOMING
+  GENERAL
 }
 
 enum FeedbackKind {
@@ -77,21 +78,96 @@ enum FeedbackStatus {
   DISMISSED
 }
 
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+// A piece of feedback is also a "ticket" once it comes from a signed-in user:
+// it gets a ticket number, can be tracked by its author and carries a history.
 model Feedback {
-  id         String         @id @default(cuid())
+  id         String           @id @default(cuid())
+  ticketNo   Int              @unique @default(autoincrement())
   targetType FeedbackTarget
   targetId   String
   targetName String
-  kind       FeedbackKind   @default(SUGGESTION)
+  kind       FeedbackKind     @default(SUGGESTION)
+  title      String?
+  priority   FeedbackPriority @default(MEDIUM)
   message    String
+  steps      String?
   email      String?
-  status     FeedbackStatus @default(NEW)
+  userId     String?
+  user       User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  status     FeedbackStatus   @default(NEW)
   adminNotes String?
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  // Shown to the requester on their ticket (adminNotes stays internal).
+  publicNote String?
+  events     FeedbackEvent[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 
   @@index([status])
   @@index([targetType, targetId])
+  @@index([userId, createdAt])
+}
+
+model FeedbackEvent {
+  id         String         @id @default(cuid())
+  feedbackId String
+  feedback   Feedback       @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  status     FeedbackStatus
+  note       String?
+  createdAt  DateTime       @default(now())
+
+  @@index([feedbackId, createdAt])
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String
+  passwordHash String
+  verified     Boolean       @default(false)
+  failedLogins Int           @default(0)
+  lockedUntil  DateTime?
+  lastLoginAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  sessions     UserSession[]
+  feedback     Feedback[]
+}
+
+model UserSession {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+enum EmailCodePurpose {
+  VERIFY
+  RESET
+}
+
+model EmailCode {
+  id          String           @id @default(cuid())
+  email       String
+  purpose     EmailCodePurpose
+  codeHash    String
+  expiresAt   DateTime
+  attempts    Int              @default(0)
+  sendCount   Int              @default(1)
+  windowStart DateTime         @default(now())
+
+  @@unique([email, purpose])
 }
 
 model Workshop {

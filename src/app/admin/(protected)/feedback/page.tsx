@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AdminTable } from "@/components/AdminTable";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ticketCode } from "@/lib/tickets";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ const kindLabels: Record<string, string> = {
 export default async function AdminFeedbackPage() {
   const feedback = await prisma.feedback.findMany({
     orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    include: { user: { select: { name: true, email: true } } },
   });
 
   return (
@@ -37,12 +39,25 @@ export default async function AdminFeedbackPage() {
         emptyMessage="No feedback yet."
         columns={[
           {
+            header: "Ticket",
+            cell: (f) => (
+              <span className="font-mono text-xs text-gray-500">
+                {ticketCode(f.ticketNo)}
+              </span>
+            ),
+          },
+          {
             header: "About",
             cell: (f) => (
               <div>
                 <p className="font-medium text-gray-900">{f.targetName}</p>
                 <p className="text-xs text-gray-400">
-                  {f.targetType === "UPCOMING" ? "Coming soon" : "Tool"}
+                  {f.targetType === "UPCOMING"
+                    ? "Coming soon"
+                    : f.targetType === "GENERAL"
+                      ? "General"
+                      : "Tool"}
+                  {f.user ? ` · ${f.user.name}` : ""}
                 </p>
               </div>
             ),
@@ -52,6 +67,7 @@ export default async function AdminFeedbackPage() {
             header: "Message",
             cell: (f) => (
               <span className="line-clamp-2 max-w-xs text-gray-700">
+                {f.title ? <strong>{f.title}: </strong> : null}
                 {f.message}
               </span>
             ),

@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { ToolDirectory } from "@/components/ToolDirectory";
 import { UpcomingCards } from "@/components/UpcomingCards";
+import { getCurrentUser } from "@/lib/user-auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const signedIn = !!(await getCurrentUser());
   const [tools, upcoming] = await Promise.all([
     prisma.tool.findMany({
       where: { isActive: true },
@@ -44,9 +46,9 @@ export default async function HomePage() {
             Click a card to open the tool in a new tab.
           </p>
         </div>
-        <ToolDirectory tools={tools} />
+        <ToolDirectory tools={tools} signedIn={signedIn} />
       </div>
-      <UpcomingCards items={upcoming} />
+      <UpcomingCards items={upcoming} signedIn={signedIn} />
     </div>
   );
 }

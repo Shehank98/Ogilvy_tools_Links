@@ -12,14 +12,20 @@ const styles: Record<string, string> = {
   DISMISSED: "bg-gray-100 text-gray-500",
 };
 
-export function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({
+  status,
+  label,
+}: {
+  status: string;
+  label?: string;
+}) {
   return (
     <span
       className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${
         styles[status] ?? "bg-gray-100 text-gray-600"
       }`}
     >
-      {status.replace(/_/g, " ")}
+      {label ?? status.replace(/_/g, " ")}
     </span>
   );
 }

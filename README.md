@@ -8,6 +8,17 @@ Internal portal for discovering and launching company tools, browsing workshop s
 - PostgreSQL + Prisma ORM
 - Deploy target: Railway
 
+## Staff sign-in, reports and ticket tracking
+
+The whole hub sits behind a staff login (switch it off with `FEATURES.userLogin` in `src/lib/features.ts`).
+
+- **Create account:** name + `@ogilvy.com` email + password → a 6-digit code is emailed (15 min, 5 tries) → verified and signed in. Password reset uses the same code flow. Passwords are scrypt-hashed, sessions are random tokens stored hashed in an `httpOnly` cookie, and sign-in/code requests are rate-limited.
+- **Tools:** the existing directory, Coming Soon cards, notices and per-card feedback button, now tied to the signed-in user.
+- **Report:** `/report`, a bug / suggestion / idea form (tool, priority, title, details, steps).
+- **My Tickets:** `/tickets`, live progress (Received → In review → Planned → Done), the team's notes and full history. Anything a user sends from a card's 💡 button shows up here too.
+- **Admin:** the existing Feedback inbox now shows ticket numbers and reporters, takes a *note to requester*, keeps a history and can email the requester on each update. Internal notes stay private.
+- **Email** goes through a small Google Apps Script relay, see [`apps-script/README.md`](apps-script/README.md). Without `APPS_SCRIPT_URL` / `APPS_SCRIPT_SECRET`, local dev prints emails to the console.
+
 ## Local development
 
 ```bash
@@ -23,10 +34,16 @@ npm run dev
 | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string (provided by Railway Postgres) |
 | `ADMIN_PASSWORD` | Shared password for the `/admin` section |
-| `SESSION_SECRET` | Secret used to sign the admin session cookie |
+| `SESSION_SECRET` | Secret used to sign the admin session cookie and hash email codes |
+| `APPS_SCRIPT_URL` | Web app URL of the mail relay (`apps-script/Code.gs`) |
+| `APPS_SCRIPT_SECRET` | Shared secret, same as `MAIL_SECRET` in the Apps Script |
+| `ALLOWED_EMAIL_DOMAINS` | *(optional)* comma-separated domains allowed to sign up, default `ogilvy.com` |
+| `ADMIN_NOTIFY_EMAIL` | *(optional)* receives an email for every new ticket |
+| `APP_URL` | *(optional)* public URL, used for links in emails |
 
 ## Railway deployment
 
 1. Create a Postgres service; Railway exposes `DATABASE_URL`.
 2. Create a service from this repo, set `ADMIN_PASSWORD` and `SESSION_SECRET`, and reference `DATABASE_URL` from the Postgres service.
-3. Set the pre-deploy (or start) command to run migrations: `npx prisma migrate deploy`.
+3. Deploy the mail relay (`apps-script/README.md`) and set `APPS_SCRIPT_URL` and `APPS_SCRIPT_SECRET`.
+4. Set the pre-deploy (or start) command to run migrations: `npx prisma migrate deploy`.

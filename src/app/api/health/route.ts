@@ -16,6 +16,8 @@ export async function GET() {
     DATABASE_URL: process.env.DATABASE_URL ? "set" : "MISSING",
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD ? "set" : "MISSING",
     SESSION_SECRET: process.env.SESSION_SECRET ? "set" : "MISSING (falls back to ADMIN_PASSWORD)",
+    APPS_SCRIPT_URL: process.env.APPS_SCRIPT_URL ? "set" : "MISSING (sign-up codes cannot be emailed)",
+    APPS_SCRIPT_SECRET: process.env.APPS_SCRIPT_SECRET ? "set" : "MISSING",
   };
 
   try {

@@ -42,7 +42,7 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
   );
 }
 
-function ToolCard({ tool }: { tool: ToolItem }) {
+function ToolCard({ tool, signedIn }: { tool: ToolItem; signedIn: boolean }) {
   return (
     <div className="group relative h-full">
       <a
@@ -86,13 +86,20 @@ function ToolCard({ tool }: { tool: ToolItem }) {
         targetId={tool.id}
         targetName={tool.name}
         variant="tool"
+        hideEmail={signedIn}
         className="absolute right-2.5 top-2.5 z-10 rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-600 shadow-sm backdrop-blur transition hover:border-brand hover:text-brand"
       />
     </div>
   );
 }
 
-export function ToolDirectory({ tools }: { tools: ToolItem[] }) {
+export function ToolDirectory({
+  tools,
+  signedIn = false,
+}: {
+  tools: ToolItem[];
+  signedIn?: boolean;
+}) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
@@ -164,7 +171,7 @@ export function ToolDirectory({ tools }: { tools: ToolItem[] }) {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
+            <ToolCard key={tool.id} tool={tool} signedIn={signedIn} />
           ))}
         </div>
       )}

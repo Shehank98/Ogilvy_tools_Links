@@ -5,12 +5,21 @@ import { Card } from "@/components/Card";
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
-  const [toolCount, workshopCount, postCount, newRequestCount, topTools] =
-    await Promise.all([
+  const [
+    toolCount,
+    workshopCount,
+    postCount,
+    newRequestCount,
+    newTicketCount,
+    userCount,
+    topTools,
+  ] = await Promise.all([
       prisma.tool.count(),
       prisma.workshop.count(),
       prisma.post.count(),
       prisma.toolRequest.count({ where: { status: "NEW" } }),
+      prisma.feedback.count({ where: { status: "NEW" } }),
+      prisma.user.count({ where: { verified: true } }),
       prisma.tool.findMany({
         orderBy: { clickCount: "desc" },
         take: 5,
@@ -23,6 +32,8 @@ export default async function AdminDashboardPage() {
     { label: "Workshops", value: workshopCount, href: "/admin/workshops" },
     { label: "Posts", value: postCount, href: "/admin/posts" },
     { label: "New requests", value: newRequestCount, href: "/admin/requests" },
+    { label: "New tickets", value: newTicketCount, href: "/admin/feedback" },
+    { label: "Signed-up users", value: userCount, href: null },
   ];
 
   return (
@@ -30,14 +41,21 @@ export default async function AdminDashboardPage() {
       <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href}>
-            <Card className="transition hover:border-brand/40">
+        {stats.map((stat) => {
+          const card = (
+            <Card className={stat.href ? "transition hover:border-brand/40" : ""}>
               <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
               <p className="mt-1 text-sm text-gray-500">{stat.label}</p>
             </Card>
-          </Link>
-        ))}
+          );
+          return stat.href ? (
+            <Link key={stat.label} href={stat.href}>
+              {card}
+            </Link>
+          ) : (
+            <div key={stat.label}>{card}</div>
+          );
+        })}
       </div>
 
       <section>

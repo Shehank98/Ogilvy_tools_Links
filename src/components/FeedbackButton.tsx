@@ -9,6 +9,8 @@ type Props = {
   targetName: string;
   variant?: "tool" | "upcoming";
   animated?: boolean;
+  /** Signed-in users are identified by their account, so skip the email box. */
+  hideEmail?: boolean;
   className?: string;
 };
 
@@ -18,6 +20,7 @@ export function FeedbackButton({
   targetName,
   variant = "tool",
   animated = true,
+  hideEmail = false,
   className = "",
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -139,6 +142,7 @@ export function FeedbackButton({
                   />
                 </label>
 
+                {!hideEmail && (
                 <label className="block text-sm">
                   <span className="mb-1 block font-medium text-neutral-700">
                     Email{" "}
@@ -153,6 +157,7 @@ export function FeedbackButton({
                     className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand"
                   />
                 </label>
+                )}
 
                 <button
                   type="submit"
