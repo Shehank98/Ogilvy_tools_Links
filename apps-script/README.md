@@ -25,6 +25,19 @@ The Tools Hub needs to send email (sign-up codes, ticket confirmations, status u
 
 After editing `Code.gs`, use **Deploy → Manage deployments → Edit → New version** so the URL serves the new code.
 
+## Check it works
+
+Open `https://your-site/api/health` and read the **`mailRelay`** line. It tests the relay without sending an email and tells you what to fix:
+
+| `mailRelay` says | Fix |
+| --- | --- |
+| `ok (...)` | All good. |
+| `secret mismatch` | `APPS_SCRIPT_SECRET` (Railway) must exactly equal `MAIL_SECRET` (Apps Script). No spaces or quotes. |
+| `Google returned a web page` | Redeploy the Web app with *Who has access: **Anyone***, and use the new `/exec` URL. |
+| `isn't authorised to send mail` | In Apps Script run `authorize` once and approve, then **Deploy → Manage deployments → Edit → New version**. |
+| `add the MAIL_SECRET Script property` | Project Settings → Script properties. |
+| `older Code.gs` | Paste the latest `Code.gs` and deploy a **New version**. |
+
 ## Good to know
 
 - **Quota:** ~100 emails/day on a free Google account, ~1,500/day on Google Workspace. Deploy it from a Workspace account, ideally a shared mailbox like `automation@…`, so mail comes from a sensible sender.

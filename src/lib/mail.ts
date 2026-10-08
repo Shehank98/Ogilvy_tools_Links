@@ -37,6 +37,48 @@ export async function sendMail(opts: {
   if (!data?.ok) throw new Error(`Mail relay failed: ${data?.error ?? res.status}`);
 }
 
+/** Plain-language check of the Apps Script relay, used by /api/health. Sends no email. */
+export async function diagnoseRelay(): Promise<string> {
+  const url = process.env.APPS_SCRIPT_URL;
+  const secret = process.env.APPS_SCRIPT_SECRET;
+  if (!url || !secret) return "NOT CONFIGURED: set APPS_SCRIPT_URL and APPS_SCRIPT_SECRET.";
+  if (/script\.google\.com/.test(url) && !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) {
+    return "FAILED: APPS_SCRIPT_URL should look like https://script.google.com/macros/s/…/exec (copy the Web app URL, not the editor link or a /dev URL).";
+  }
+  const asJson = async (res: Response) => {
+    const text = await res.text();
+    try {
+      return JSON.parse(text) as { ok?: boolean; error?: string; quota?: number };
+    } catch {
+      return null;
+    }
+  };
+  try {
+    const get = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(15_000) });
+    if (!(await asJson(get))) {
+      return `FAILED: Google returned a web page (HTTP ${get.status}) instead of the script's reply. Redeploy the Web app with "Execute as: Me" and "Who has access: Anyone", then use the new /exec URL.`;
+    }
+    const post = await fetch(url, {
+      method: "POST",
+      redirect: "follow",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ secret, ping: true, to: "relay-check@invalid.invalid", subject: "ping", html: "ping" }),
+      signal: AbortSignal.timeout(15_000),
+    });
+    const r = await asJson(post);
+    if (!r) return `FAILED: the script answered with something unreadable (HTTP ${post.status}).`;
+    if (r.ok) return `ok (secret accepted, mail permission granted, ${r.quota ?? "?"} emails left today)`;
+    const err = r.error ?? "";
+    if (/unauthorized/i.test(err)) return "FAILED: secret mismatch. APPS_SCRIPT_SECRET must exactly equal the MAIL_SECRET Script property (no spaces or quotes).";
+    if (/MAIL_SECRET is not set/i.test(err)) return "FAILED: add the MAIL_SECRET Script property in Apps Script (Project Settings → Script properties).";
+    if (/allowed domain/i.test(err)) return "PARTIAL: secret accepted, but this is an older Code.gs. Paste the latest apps-script/Code.gs and deploy a New version to also verify the mail permission.";
+    if (/permission|authori/i.test(err)) return `FAILED: the script isn't authorised to send mail. In Apps Script run the "authorize" function once and approve, then deploy a New version. (${err.slice(0, 120)})`;
+    return `FAILED: ${err.slice(0, 200)}`;
+  } catch (e) {
+    return `FAILED: could not reach Google (${e instanceof Error ? e.message : String(e)}).`;
+  }
+}
+
 function layout(heading: string, body: string): string {
   return `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#1d1d1d">
 <div style="border-top:4px solid #ee3124;padding:18px 0 4px"><span style="font-family:Georgia,serif;font-size:24px;font-weight:700;color:#ee3124">Ogilvy</span>

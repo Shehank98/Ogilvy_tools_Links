@@ -24,6 +24,10 @@ function doPost(e) {
     if (!secret) throw new Error('MAIL_SECRET is not set in Script properties.');
     if (!safeEqual_(String(req.secret || ''), secret)) throw new Error('Unauthorized.');
 
+    // Health probe from the app: proves the secret matches and that the script is
+    // allowed to send mail (reading the quota needs the mail permission). Sends nothing.
+    if (req.ping) return json_({ ok: true, quota: MailApp.getRemainingDailyQuota() });
+
     var to = String(req.to || '').trim().toLowerCase();
     var domains = (props.getProperty('ALLOWED_DOMAINS') || 'ogilvy.com')
       .toLowerCase().split(',').map(function (d) { return d.trim(); });

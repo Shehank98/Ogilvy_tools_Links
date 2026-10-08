@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { diagnoseRelay } from "@/lib/mail";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,8 @@ export async function GET() {
   } else {
     checks.migrations = "skipped (no database connection)";
   }
+
+  checks.mailRelay = await diagnoseRelay();
 
   const healthy =
     checks.databaseConnection === "ok" && checks.migrations.startsWith("ok");
