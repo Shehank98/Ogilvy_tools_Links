@@ -46,4 +46,7 @@ npm run dev
 1. Create a Postgres service; Railway exposes `DATABASE_URL`.
 2. Create a service from this repo, set `ADMIN_PASSWORD` and `SESSION_SECRET`, and reference `DATABASE_URL` from the Postgres service.
 3. Deploy the mail relay (`apps-script/README.md`) and set `APPS_SCRIPT_URL` and `APPS_SCRIPT_SECRET`.
-4. Migrations run automatically: `npm start` runs `prisma migrate deploy` before launching the app, so new releases update the database themselves. If a page ever shows "Something went wrong", open `/api/health`: it reports `FAILED: database is behind the code` when a migration is pending (fix: run `npx prisma migrate deploy` against the Railway database).
+4. Migrations run automatically: `npm start` first runs `scripts/migrate.mjs`, which applies pending Prisma migrations and **never stops the app from starting**.
+   - If the database was created without Prisma's migration history (e.g. with `prisma db push`, error `P3005`), the script checks that it matches `prisma/baseline.prisma` (the schema before accounts/tickets were added). If it does, it records the original migrations as applied and then applies the new one. Existing data is untouched.
+   - If the database doesn't match, nothing is changed. The log says so, and `/api/health` reports `FAILED: database is behind the code`.
+   - If a page ever shows "Something went wrong", open `/api/health` first.
