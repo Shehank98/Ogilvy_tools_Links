@@ -43,12 +43,12 @@ export function normalizeCompanyEmail(raw: unknown): string | null {
 /* ------------------------------- passwords ------------------------------ */
 
 export const PASSWORD_RULE =
-  "Password needs 10+ characters with at least one letter and one number.";
+  "Password needs 6+ characters with at least one letter and one number.";
 
 export function isStrongPassword(p: unknown): p is string {
   return (
     typeof p === "string" &&
-    p.length >= 10 &&
+    p.length >= 6 &&
     p.length <= 128 &&
     /[a-z]/i.test(p) &&
     /\d/.test(p)
