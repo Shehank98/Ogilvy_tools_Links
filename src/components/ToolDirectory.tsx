@@ -23,8 +23,8 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
 
   if (!src || failed) {
     return (
-      <div className="flex h-32 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
-        <span className="font-serif text-5xl font-bold text-white/95 transition duration-300 group-hover:scale-110">
+      <div className="flex h-20 items-center justify-center bg-gradient-to-br from-brand to-brand-dark">
+        <span className="font-serif text-3xl font-bold text-white/95 transition duration-300 group-hover:scale-110">
           {letter}
         </span>
       </div>
@@ -37,11 +37,13 @@ function ToolLogoBand({ tool }: { tool: ToolItem }) {
       alt={`${tool.name} logo`}
       referrerPolicy="no-referrer"
       onError={() => setFailed(true)}
-      className="h-32 w-full bg-white object-cover transition duration-500 group-hover:scale-105"
+      className="h-20 w-full bg-white object-cover transition duration-500 group-hover:scale-105"
     />
   );
 }
 
+// Compact tile: just the logo and the tool's name. Click opens the tool; the
+// small bulb (top-right) still lets people send feedback about it.
 function ToolCard({
   tool,
   signedIn,
@@ -60,35 +62,26 @@ function ToolCard({
         href={tool.link}
         target="_blank"
         rel="noopener noreferrer"
+        title={tool.description ?? tool.name}
         onClick={() => logToolClick(tool.id)}
-        className="flex h-full flex-col overflow-hidden rounded-2xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-brand/60 hover:shadow-xl active:translate-y-0 active:scale-[0.98]"
+        className="flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-lg active:translate-y-0 active:scale-[0.97]"
       >
         {FEATURES.toolLogos && (
           <div className="overflow-hidden border-b border-black/5">
             <ToolLogoBand tool={tool} />
           </div>
         )}
-        <div className="flex flex-1 flex-col p-5">
-          <div className="flex min-w-0 items-center gap-2">
-            <h3 className="truncate text-base font-semibold text-black group-hover:text-brand-dark">
-              {tool.name}
-            </h3>
-            {tool.isBeta && (
-              <span
-                title="Beta: still being tested, you may run into errors."
-                className="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700"
-              >
-                Beta
-              </span>
-            )}
-          </div>
-          <span className="mt-1.5 inline-flex w-fit max-w-full truncate rounded-full bg-neutral-100 px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide text-neutral-500">
-            {tool.category}
-          </span>
-          {tool.description && (
-            <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-neutral-600">
-              {tool.description}
-            </p>
+        <div className="flex items-center justify-center gap-1.5 px-3 py-2.5">
+          <h3 className="truncate text-sm font-semibold text-black group-hover:text-brand-dark">
+            {tool.name}
+          </h3>
+          {tool.isBeta && (
+            <span
+              title="Beta: still being tested, you may run into errors."
+              className="shrink-0 rounded bg-amber-100 px-1 py-px text-[9px] font-bold uppercase tracking-wide text-amber-700"
+            >
+              Beta
+            </span>
           )}
         </div>
       </a>
@@ -98,7 +91,7 @@ function ToolCard({
         targetName={tool.name}
         variant="tool"
         hideEmail={signedIn}
-        className="absolute right-2.5 top-2.5 z-10 rounded-full border border-black/10 bg-white/90 px-2.5 py-1 text-[11px] font-medium text-neutral-600 shadow-sm backdrop-blur transition hover:border-brand hover:text-brand"
+        className="absolute right-1.5 top-1.5 z-10 rounded-full border border-black/10 bg-white/90 px-2 py-0.5 text-[11px] font-medium text-neutral-600 shadow-sm backdrop-blur transition hover:border-brand hover:text-brand"
       />
     </div>
   );
@@ -180,7 +173,7 @@ export function ToolDirectory({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filtered.map((tool, i) => (
             <ToolCard key={tool.id} tool={tool} signedIn={signedIn} index={i} />
           ))}

@@ -25,7 +25,6 @@ export async function submitTicket(
     priority: formData.get("priority"),
     title: formData.get("title"),
     message: formData.get("message"),
-    steps: formData.get("steps") ?? "",
   });
   if (!parsed.success) return { error: firstZodError(parsed.error) };
   const d = parsed.data;
@@ -51,7 +50,6 @@ export async function submitTicket(
       priority: d.priority,
       title: d.title,
       message: d.message,
-      steps: d.kind === "BUG" ? d.steps || null : null,
       userId: user.id,
       email: user.email,
       events: { create: { status: "NEW", note: "Ticket raised" } },

@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createSessionToken, SESSION_COOKIE } from "@/lib/auth";
+import { createSessionToken, isSecureRequest, SESSION_COOKIE } from "@/lib/auth";
 import type { ActionState } from "./state";
 
 export async function login(
@@ -19,7 +19,7 @@ export async function login(
   (await cookies()).set(SESSION_COOKIE, createSessionToken(), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await isSecureRequest(),
     maxAge: 60 * 60 * 24 * 7,
     path: "/",
   });

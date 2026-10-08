@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from "crypto";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export const SESSION_COOKIE = "admin_session";
@@ -10,6 +10,15 @@ function secret(): string {
 
 export function createSessionToken(): string {
   return createHmac("sha256", secret()).update("admin-session-v1").digest("hex");
+}
+
+/** Mark cookies Secure only when the request really arrived over HTTPS (also
+ *  behind a proxy such as Railway). A Secure cookie over plain http is silently
+ *  dropped by the browser, which makes sign-in look like it does nothing. */
+export async function isSecureRequest(): Promise<boolean> {
+  const proto = (await headers()).get("x-forwarded-proto");
+  if (proto) return proto.split(",")[0].trim() === "https";
+  return process.env.NODE_ENV === "production" && !!process.env.APP_URL?.startsWith("https:");
 }
 
 export async function isAdmin(): Promise<boolean> {

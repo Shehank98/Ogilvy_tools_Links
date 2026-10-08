@@ -11,6 +11,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { FEATURES } from "@/lib/features";
+import { isSecureRequest } from "@/lib/auth";
 
 export const USER_COOKIE = "user_session";
 const SESSION_DAYS = 7;
@@ -113,7 +114,7 @@ export async function createUserSession(userId: string): Promise<void> {
   (await cookies()).set(USER_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: await isSecureRequest(),
     expires: expiresAt,
     path: "/",
   });

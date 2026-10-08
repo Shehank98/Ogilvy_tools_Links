@@ -83,7 +83,7 @@ export const feedbackUpdateSchema = z.object({
 });
 
 export const ticketSchema = z.object({
-  kind: z.enum(["BUG", "SUGGESTION", "IDEA"], { message: "Pick what you are raising" }),
+  kind: z.enum(["BUG", "SUGGESTION"], { message: "Pick what you are raising" }),
   targetId: z.string().trim().min(1, "Pick the tool this is about"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).default("MEDIUM"),
   title: z.string().trim().min(5, "Please add a clearer title (5+ characters)").max(120, "Title is too long"),
@@ -92,7 +92,6 @@ export const ticketSchema = z.object({
     .trim()
     .min(10, "Please add a bit more detail to the description")
     .max(5000, "Description is too long"),
-  steps: z.string().trim().max(3000, "Steps are too long").optional(),
 });
 
 export const registerSchema = z.object({

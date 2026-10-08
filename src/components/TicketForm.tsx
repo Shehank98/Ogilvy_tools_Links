@@ -14,7 +14,7 @@ export function TicketForm({
   defaultToolId: string;
 }) {
   const [state, formAction, pending] = useActionState(submitTicket, null);
-  const [kind, setKind] = useState<"BUG" | "SUGGESTION" | "IDEA">("BUG");
+  const [kind, setKind] = useState<"BUG" | "SUGGESTION">("BUG");
   const bug = kind === "BUG";
 
   return (
@@ -35,7 +35,6 @@ export function TicketForm({
               [
                 ["BUG", "🐞 Bug"],
                 ["SUGGESTION", "💡 Suggestion"],
-                ["IDEA", "✨ Idea"],
               ] as const
             ).map(([value, label]) => (
               <label
@@ -113,21 +112,6 @@ export function TicketForm({
           className={inputClass}
         />
       </label>
-
-      {bug && (
-        <label className="anim-fade-up block text-sm">
-          <span className="mb-1 block font-medium text-gray-700">
-            Steps to reproduce <span className="font-normal text-gray-400">(optional)</span>
-          </span>
-          <textarea
-            name="steps"
-            maxLength={3000}
-            rows={4}
-            placeholder={"1. Open…\n2. Click…\n3. See error…"}
-            className={inputClass}
-          />
-        </label>
-      )}
 
       <div className="flex items-center gap-4">
         <button

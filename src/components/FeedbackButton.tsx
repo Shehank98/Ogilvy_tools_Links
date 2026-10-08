@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { submitFeedback } from "@/lib/actions/feedback";
 
 type Props = {
@@ -66,7 +67,10 @@ export function FeedbackButton({
         )}
       </button>
 
-      {open && (
+      {open &&
+        createPortal(
+        // Rendered in <body> so no animated/transformed card can trap or
+        // overlap the dialog.
         <div
           className="anim-fade fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-[2px] sm:items-center"
           onClick={() => setOpen(false)}
@@ -185,7 +189,8 @@ export function FeedbackButton({
               </form>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

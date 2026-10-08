@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AuthPanel } from "@/components/AuthPanel";
 import { FEATURES } from "@/lib/features";
@@ -31,7 +32,15 @@ export default async function LoginPage() {
           <li>• Get live progress and email updates on every ticket</li>
         </ul>
       </div>
-      <AuthPanel domain={allowedDomains()[0]} />
+      <div>
+        <AuthPanel domain={allowedDomains()[0]} />
+        <p className="mt-4 text-center text-xs text-neutral-500">
+          Automation team?{" "}
+          <Link href="/admin/login" className="font-medium text-brand hover:text-brand-dark">
+            Admin sign-in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
