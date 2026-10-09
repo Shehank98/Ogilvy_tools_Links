@@ -36,6 +36,10 @@ After editing `Code.gs`, use **Deploy → Manage deployments → Edit → New ve
 
 Sign-up and reset codes, ticket confirmations, status updates, the "new ticket" alert, and **"ticket assigned to you" emails to team members** (these carry a reply-to so a reply reaches the person who raised the ticket). After updating `Code.gs` to the latest version, remember **Deploy → Manage deployments → Edit → New version**.
 
+## Prove real delivery (one click)
+
+In the Apps Script editor choose **`sendTestEmail`** and click **Run**. It emails a sample "ticket assigned" message to the Google account that owns the script (only you). If it arrives, Gmail is sending for this account. Check spam the first time.
+
 ## Check it works
 
 Open `https://your-site/api/health` and read the **`mailRelay`** line. It tests the relay without sending an email and tells you what to fix:

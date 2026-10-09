@@ -81,6 +81,27 @@ function checkSetup() {
   Logger.log('Emails left today: ' + MailApp.getRemainingDailyQuota());
 }
 
+/**
+ * Real-delivery test: run it from the editor and check YOUR inbox. It sends one
+ * sample "ticket assigned" email to the Google account that owns this script
+ * (nobody else), using the same MailApp call the live relay uses.
+ */
+function sendTestEmail() {
+  var me = Session.getEffectiveUser().getEmail();
+  MailApp.sendEmail({
+    to: me,
+    replyTo: me,
+    subject: '[TH-0000] Assigned to you: Test email from the Tools Hub relay',
+    htmlBody: '<div style="font-family:Arial,sans-serif"><h2 style="color:#ee3124">Relay test</h2>' +
+      '<p>If you can read this, the Tools Hub mail relay can send email from this Google account.</p>' +
+      '<p style="color:#6e6e6e;font-size:13px">Sent at ' + new Date().toISOString() + '. Emails left today: ' +
+      MailApp.getRemainingDailyQuota() + '.</p></div>',
+    body: 'Relay test: the Tools Hub mail relay can send email from this Google account.',
+    name: PropertiesService.getScriptProperties().getProperty('SENDER_NAME') || 'Ogilvy Tools Hub'
+  });
+  Logger.log('Test email sent to ' + me + '. Check your inbox (and spam).');
+}
+
 /** Run once from the editor to grant the email permission. */
 function authorize() {
   Logger.log('Remaining daily email quota: ' + MailApp.getRemainingDailyQuota());
