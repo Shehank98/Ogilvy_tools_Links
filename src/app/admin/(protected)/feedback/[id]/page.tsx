@@ -8,6 +8,7 @@ import { deleteFeedback, updateFeedback } from "@/lib/actions/feedback";
 import { fmtDateTime, fmtDuration, loadTicket } from "@/lib/feedback-report";
 import { PROGRESS_STEPS, STATUS_LABEL } from "@/lib/tickets";
 import { ASSIGNEES } from "@/lib/team";
+import { IMAGE_TYPES, extOf, fmtBytes } from "@/lib/uploads";
 import { AssignPicker } from "@/components/AssignPicker";
 
 export const dynamic = "force-dynamic";
@@ -120,6 +121,58 @@ export default async function AdminFeedbackDetailPage({
             )}
           </Card>
 
+          {t.files.length > 0 && (
+            <Card>
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+                  Attachments ({t.files.length})
+                </h2>
+                <span className="text-xs text-gray-400">Stored under tickets/{t.code}/</span>
+              </div>
+              {t.fileCount > 0 ? (
+                <>
+                  <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                    {t.files.filter((f) => !f.deletedAt).map((f, i) => {
+                      const url = `/api/admin/ticket-files/${f.id}`;
+                      const isImg = IMAGE_TYPES.has(f.contentType);
+                      return (
+                        <li key={f.id} style={{ "--i": i } as React.CSSProperties} className="anim-fade-up stagger overflow-hidden rounded-lg border border-gray-200 bg-white">
+                          {isImg ? (
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="block bg-gray-50">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={url} alt={f.name} loading="lazy" className="h-36 w-full object-contain transition duration-300 hover:scale-[1.03]" />
+                            </a>
+                          ) : (
+                            <div className="flex h-20 items-center justify-center bg-gray-50 font-mono text-lg font-bold uppercase tracking-wider text-gray-400">
+                              .{extOf(f.name)}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between gap-2 border-t border-gray-100 px-3 py-2 text-sm">
+                            <span className="min-w-0">
+                              <span className="block truncate font-medium text-gray-900" title={f.name}>{f.name}</span>
+                              <span className="text-xs text-gray-500">{fmtBytes(f.size)}</span>
+                            </span>
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-sm font-medium text-brand hover:text-brand-dark">
+                              {isImg ? "Open" : "Download"}
+                            </a>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <p className="mt-3 text-xs text-gray-500">
+                    These files are deleted automatically when the ticket is set to <strong>Done</strong> or <strong>Closed</strong>, to save storage.
+                  </p>
+                </>
+              ) : (
+                <p className="mt-2 rounded-md bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                  {t.filesRemoved} attachment{t.filesRemoved === 1 ? " was" : "s were"} deleted from storage
+                  {t.files[0]?.deletedAt ? ` on ${fmtDateTime(t.files.find((f) => f.deletedAt)?.deletedAt ?? null)}` : ""} because the ticket was resolved.
+                </p>
+              )}
+            </Card>
+          )}
+
           <Card>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
               {t.kind === "BUG" ? "Fix details (visible to the requester)" : "Response (visible to the requester)"}
@@ -172,6 +225,10 @@ export default async function AdminFeedbackDetailPage({
                 </Select>
               </Field>
               <AssignPicker options={ASSIGNEES} defaultSelected={t.assignedTo} />
+              <label className="-mt-1 flex items-center gap-2 text-xs text-gray-600">
+                <input type="checkbox" name="notifyAssignees" defaultChecked />
+                Email newly assigned people about this ticket
+              </label>
               <Field
                 label={t.kind === "BUG" ? "Fix details / note to requester" : "Note to requester"}
                 hint={t.kind === "BUG" ? "What was wrong and how it was fixed. Shown to the requester and included in the bug-fix reports." : "Shown to the requester on their ticket."}

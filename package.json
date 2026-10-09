@@ -11,6 +11,7 @@
     "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
+    "@google-cloud/storage": "^8.4.0",
     "@prisma/client": "^6.19.3",
     "@uiw/react-md-editor": "^4.1.1",
     "exceljs": "^4.4.0",

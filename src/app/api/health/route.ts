@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { diagnoseRelay } from "@/lib/mail";
+import { diagnoseStorage } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,7 @@ export async function GET() {
       await prisma.user.count();
       await prisma.feedback.findFirst({ select: { ticketNo: true, assignedTo: true } });
       await prisma.feedbackEvent.count();
+      await prisma.ticketFile.count();
       checks.migrations = "ok (tables exist)";
     } catch (e) {
       checks.migrations = `FAILED: database is behind the code. Run "npx prisma migrate deploy" (see README). ${shortError(e)}`;
@@ -46,6 +48,9 @@ export async function GET() {
   }
 
   checks.mailRelay = await diagnoseRelay();
+  checks.fileStorage = await diagnoseStorage();
+  checks.CRON_SECRET = process.env.CRON_SECRET ? "set" : "MISSING (the file clean-up safety net is off)";
+  checks.APP_URL = process.env.APP_URL ? "set" : "MISSING (assignment emails will have no \"Open ticket\" link)";
 
   const healthy =
     checks.databaseConnection === "ok" && checks.migrations.startsWith("ok");

@@ -171,6 +171,7 @@ export async function buildWorkbook(
       { header: "Resolved (UTC)", width: 18 },
       { header: "Time to resolve", width: 15 },
       { header: "Open for", width: 12 },
+      { header: "Attachments in storage", width: 14 },
       { header: "Description", width: 55, wrap: true },
       { header: "Steps to reproduce", width: 40, wrap: true },
       { header: "Fix details / note to requester", width: 45, wrap: true },
@@ -181,6 +182,7 @@ export async function buildWorkbook(
       t.reporterName, t.assignedTo.join(", ") || "Unassigned", t.reporterEmail, t.createdAt, t.updatedAt, t.resolvedAt,
       t.timeToResolveMs == null ? "" : fmtDuration(t.timeToResolveMs),
       t.openForMs == null ? "" : fmtDuration(t.openForMs),
+      t.fileCount,
       t.description, t.steps, t.requesterNote, t.internalNotes,
     ]),
     (row, i) => colorise(row, 6, 5, rows[i])

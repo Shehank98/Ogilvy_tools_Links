@@ -243,6 +243,11 @@ export default async function AdminFeedbackPage({
                     <p className="line-clamp-1 text-xs text-gray-500">
                       {t.tool}
                       {t.reporterName || t.reporterEmail ? ` · ${t.reporterName || t.reporterEmail}` : ""}
+                      {t.fileCount > 0 && (
+                        <span className="ml-1.5 rounded bg-gray-100 px-1 py-px text-[11px] font-medium text-gray-700" title={`${t.fileCount} attachment${t.fileCount === 1 ? "" : "s"}`}>
+                          📎 {t.fileCount}
+                        </span>
+                      )}
                     </p>
                   </td>
                   <td className="px-4 py-3"><PriorityBadge priority={t.priority} label={t.priorityLabel} /></td>

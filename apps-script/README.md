@@ -32,6 +32,10 @@ After editing `Code.gs`, use **Deploy → Manage deployments → Edit → New ve
 3. Compare that URL with `APPS_SCRIPT_URL` on Railway. If they differ, Railway is calling a different project (for example an old copy): update `APPS_SCRIPT_URL` to the URL from the log.
 4. If the property name looks different (extra space, wrong case), delete it and add it again as exactly `MAIL_SECRET`.
 
+## What this relay sends
+
+Sign-up and reset codes, ticket confirmations, status updates, the "new ticket" alert, and **"ticket assigned to you" emails to team members** (these carry a reply-to so a reply reaches the person who raised the ticket). After updating `Code.gs` to the latest version, remember **Deploy → Manage deployments → Edit → New version**.
+
 ## Check it works
 
 Open `https://your-site/api/health` and read the **`mailRelay`** line. It tests the relay without sending an email and tells you what to fix:

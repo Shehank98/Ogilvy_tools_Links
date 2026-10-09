@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local development uploads (STORAGE_DRIVER=local)
+/.uploads/

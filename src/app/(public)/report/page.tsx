@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { FEATURES } from "@/lib/features";
 import { requireUser } from "@/lib/user-auth";
 import { TicketForm } from "@/components/TicketForm";
+import { storageEnabled } from "@/lib/storage";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function ReportPage({
         <p className="mb-4 mt-1 text-sm text-gray-600">
           Found something broken or have an idea? Tell the Automation team.
         </p>
-        <TicketForm tools={tools} defaultToolId={defaultToolId} />
+        <TicketForm tools={tools} defaultToolId={defaultToolId} uploadsEnabled={storageEnabled()} />
       </div>
       <aside className="anim-fade-up stagger h-fit rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold text-gray-900">What happens next</h2>
@@ -37,6 +38,7 @@ export default async function ReportPage({
             ["You submit", "and get a ticket number by email."],
             ["The Automation team reviews", "and sets a status."],
             ["You follow progress", "under My Tickets and by email."],
+            ...(storageEnabled() ? [["Attachments are deleted", "automatically once your ticket is resolved."]] : []),
           ].map(([b, t], i) => (
             <li
               key={b}

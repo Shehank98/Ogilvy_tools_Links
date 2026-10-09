@@ -26,16 +26,19 @@ const dt = new Intl.DateTimeFormat("en-GB", {
 export default async function TicketsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ new?: string }>;
+  searchParams: Promise<{ new?: string; upload_failed?: string }>;
 }) {
   if (!FEATURES.userLogin) redirect("/");
   const user = (await requireUser())!;
-  const { new: justRaised } = await searchParams;
+  const { new: justRaised, upload_failed: uploadFailed } = await searchParams;
 
   const tickets = await prisma.feedback.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },
-    include: { events: { orderBy: { createdAt: "desc" } } },
+    include: {
+      events: { orderBy: { createdAt: "desc" } },
+      files: { select: { id: true, name: true, size: true, deletedAt: true }, orderBy: { uploadedAt: "asc" } },
+    },
   });
 
   return (
@@ -62,6 +65,12 @@ export default async function TicketsPage({
       )}
 
       <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pb-1 pr-1">
+      {uploadFailed && (
+        <p role="alert" className="shrink-0 rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Your ticket was created, but {uploadFailed} attachment{uploadFailed === "1" ? "" : "s"} could not be uploaded. You can email the file to the team instead.
+        </p>
+      )}
+
       {tickets.length === 0 ? (
         <EmptyState message="You haven't raised any tickets yet." />
       ) : (
@@ -144,6 +153,22 @@ export default async function TicketsPage({
                   {t.assignedTo.map((n) => (
                     <span key={n} className="rounded-full bg-gray-900 px-2.5 py-0.5 font-medium text-white">{n}</span>
                   ))}
+                </p>
+              )}
+
+              {t.files.length > 0 && (
+                <p className="mt-3 text-xs text-gray-600">
+                  <span aria-hidden>📎</span>{" "}
+                  {t.files.some((f) => !f.deletedAt) ? (
+                    <>
+                      {t.files.filter((f) => !f.deletedAt).map((f) => f.name).join(", ")}
+                      <span className="text-gray-400"> · kept until your ticket is resolved</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-400">
+                      {t.files.length} attachment{t.files.length === 1 ? "" : "s"} removed after your ticket was resolved
+                    </span>
+                  )}
                 </p>
               )}
 

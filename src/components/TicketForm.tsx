@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { submitTicket } from "@/lib/actions/tickets";
+import { ACCEPT_ATTR, MAX_FILES, MAX_FILE_BYTES, checkFileSet, fmtBytes } from "@/lib/uploads";
 
 const inputClass =
   "w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand";
@@ -9,16 +10,49 @@ const inputClass =
 export function TicketForm({
   tools,
   defaultToolId,
+  uploadsEnabled = false,
 }: {
   tools: { id: string; name: string }[];
   defaultToolId: string;
+  uploadsEnabled?: boolean;
 }) {
-  const [state, formAction, pending] = useActionState(submitTicket, null);
+  const [state, formAction, isPending] = useActionState(submitTicket, null);
+  const [, startTransition] = useTransition();
+  const [files, setFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const picker = useRef<HTMLInputElement>(null);
+  const pending = isPending;
+
+  function addFiles(incoming: FileList | File[]) {
+    const next = [...files];
+    for (const f of Array.from(incoming)) {
+      if (!next.some((x) => x.name === f.name && x.size === f.size)) next.push(f);
+    }
+    const problem = checkFileSet(next);
+    if (problem) {
+      setFileError(problem);
+    } else {
+      setFileError(null);
+      setFiles(next);
+    }
+    if (picker.current) picker.current.value = "";
+  }
+
+  // Sending the form ourselves (rather than letting React reset it after the
+  // action) keeps everything the person typed if the server finds a problem.
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    fd.delete("files");
+    files.forEach((f) => fd.append("files", f));
+    startTransition(() => formAction(fd));
+  }
   const [kind, setKind] = useState<"BUG" | "SUGGESTION">("BUG");
   const bug = kind === "BUG";
 
   return (
-    <form action={formAction} className="flex min-h-0 flex-1 flex-col gap-3.5">
+    <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col gap-3.5">
       {state?.error && (
         <p key={state.error} role="alert" className="anim-shake rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {state.error}
@@ -113,7 +147,60 @@ export function TicketForm({
         />
       </label>
 
-      <div style={{ "--i": 4 } as React.CSSProperties} className="anim-fade-up stagger flex items-center gap-4">
+      {uploadsEnabled && (
+        <div style={{ "--i": 4 } as React.CSSProperties} className="anim-fade-up stagger text-sm">
+          <input
+            ref={picker}
+            type="file"
+            multiple
+            accept={ACCEPT_ATTR}
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            onChange={(e) => e.target.files && addFiles(e.target.files)}
+          />
+          <button
+            type="button"
+            onClick={() => picker.current?.click()}
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
+            className={`flex w-full flex-col items-center justify-center gap-0.5 rounded-md border-2 border-dashed px-3 py-2 text-sm font-medium transition-colors ${
+              dragging ? "border-brand bg-red-50 text-brand-dark" : "border-gray-300 text-gray-600 hover:border-gray-900 hover:text-gray-900"
+            }`}
+          >
+            <span>
+              <span aria-hidden>📎</span> Attach screenshots or files
+            </span>
+            <span className="text-xs font-normal text-gray-400">
+              {`Optional · up to ${MAX_FILES} files, ${fmtBytes(MAX_FILE_BYTES)} each · drag and drop works`}
+            </span>
+          </button>
+          {fileError && (
+            <p key={fileError} role="alert" className="anim-shake mt-1.5 rounded-md bg-red-50 px-3 py-1.5 text-xs text-red-700">{fileError}</p>
+          )}
+          {files.length > 0 && (
+            <ul className="mt-2 flex flex-wrap gap-1.5">
+              {files.map((f) => (
+                <li key={f.name + f.size} className="anim-pop inline-flex max-w-[16rem] items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 py-0.5 pl-2.5 pr-1 text-xs text-gray-700">
+                  <span className="truncate">{f.name}</span>
+                  <span className="shrink-0 text-gray-400">{fmtBytes(f.size)}</span>
+                  <button
+                    type="button"
+                    aria-label={`Remove ${f.name}`}
+                    onClick={() => { setFiles(files.filter((x) => x !== f)); setFileError(null); }}
+                    className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-900"
+                  >
+                    ×
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <div style={{ "--i": 5 } as React.CSSProperties} className="anim-fade-up stagger flex items-center gap-4">
         <button
           type="submit"
           disabled={pending}

@@ -10,6 +10,7 @@ import {
   sendTicketReceivedEmail,
 } from "@/lib/mail";
 import { KIND_LABEL, PRIORITY_LABEL, ticketCode } from "@/lib/tickets";
+import { prepareUploads, saveTicketFiles } from "@/lib/ticket-files";
 import { firstZodError, type ActionState } from "./state";
 
 export async function submitTicket(
@@ -28,6 +29,11 @@ export async function submitTicket(
   });
   if (!parsed.success) return { error: firstZodError(parsed.error) };
   const d = parsed.data;
+
+  // Check the attachments first, so a bad file never leaves a half-made ticket.
+  const picked = formData.getAll("files").filter((f): f is File => f instanceof File && f.size > 0);
+  const prepared = await prepareUploads(picked);
+  if ("error" in prepared) return { error: prepared.error };
 
   let targetType: "TOOL" | "GENERAL" = "GENERAL";
   let targetName = "General";
@@ -56,6 +62,8 @@ export async function submitTicket(
     },
   });
 
+  const upload = await saveTicketFiles(ticket, prepared.files);
+
   const mail = {
     code: ticketCode(ticket.ticketNo),
     title: d.title,
@@ -68,12 +76,14 @@ export async function submitTicket(
   );
   const notify = process.env.ADMIN_NOTIFY_EMAIL;
   if (notify) {
-    sendAdminNewTicketEmail(notify, user.name, PRIORITY_LABEL[d.priority], mail).catch((e) =>
+    sendAdminNewTicketEmail(notify, user.name, PRIORITY_LABEL[d.priority], mail, upload.saved).catch((e) =>
       console.error("[tickets] admin email failed:", e)
     );
   }
 
   revalidatePath("/tickets");
   revalidatePath("/admin/feedback");
-  redirect(`/tickets?new=${ticketCode(ticket.ticketNo)}`);
+  redirect(
+    `/tickets?new=${ticketCode(ticket.ticketNo)}${upload.failed ? `&upload_failed=${upload.failed}` : ""}`
+  );
 }

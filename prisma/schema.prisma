@@ -108,12 +108,31 @@ model Feedback {
   // Team members this ticket is assigned to (names from src/lib/team.ts).
   assignedTo String[]         @default([])
   events     FeedbackEvent[]
+  files      TicketFile[]
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
 
   @@index([status])
   @@index([targetType, targetId])
   @@index([userId, createdAt])
+}
+
+// A file a requester attached to a ticket. The bytes live in object storage
+// (Firebase Storage) under tickets/<TICKET-CODE>/ and are removed automatically
+// once the ticket is Done or Closed; the row stays so history is accurate.
+model TicketFile {
+  id          String    @id @default(cuid())
+  feedbackId  String
+  feedback    Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  name        String
+  path        String
+  size        Int
+  contentType String
+  uploadedAt  DateTime  @default(now())
+  deletedAt   DateTime?
+
+  @@index([feedbackId])
+  @@index([deletedAt])
 }
 
 model FeedbackEvent {

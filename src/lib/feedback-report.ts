@@ -92,10 +92,15 @@ export type TicketRow = {
   /** How long an unresolved ticket has been open. */
   openForMs: number | null;
   events: { at: Date; status: FeedbackStatus; statusLabel: string; note: string }[];
+  files: { id: string; name: string; size: number; contentType: string; uploadedAt: Date; deletedAt: Date | null }[];
+  /** Attachments still in storage. */
+  fileCount: number;
+  /** Attachments that were deleted from storage after resolution. */
+  filesRemoved: number;
 };
 
 type Loaded = Prisma.FeedbackGetPayload<{
-  include: { user: { select: { name: true; email: true } }; events: true };
+  include: { user: { select: { name: true; email: true } }; events: true; files: true };
 }>;
 
 function toRow(t: Loaded, now: number): TicketRow {
@@ -131,6 +136,11 @@ function toRow(t: Loaded, now: number): TicketRow {
     resolvedAt,
     timeToResolveMs: resolvedAt ? Math.max(0, resolvedAt.getTime() - t.createdAt.getTime()) : null,
     openForMs: open ? Math.max(0, now - t.createdAt.getTime()) : null,
+    files: [...t.files]
+      .sort((a, b) => a.uploadedAt.getTime() - b.uploadedAt.getTime())
+      .map((f) => ({ id: f.id, name: f.name, size: f.size, contentType: f.contentType, uploadedAt: f.uploadedAt, deletedAt: f.deletedAt })),
+    fileCount: t.files.filter((f) => !f.deletedAt).length,
+    filesRemoved: t.files.filter((f) => f.deletedAt).length,
     events: events.map((e) => ({
       at: e.createdAt,
       status: e.status,
@@ -176,7 +186,7 @@ export async function loadTickets(f: FeedbackFilters): Promise<TicketRow[]> {
     await prisma.feedback.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true, email: true } }, events: true },
+      include: { user: { select: { name: true, email: true } }, events: true, files: true },
     })
   ).map((t) => toRow(t, now));
 
@@ -194,7 +204,7 @@ export async function loadTickets(f: FeedbackFilters): Promise<TicketRow[]> {
 export async function loadTicket(id: string): Promise<TicketRow | null> {
   const t = await prisma.feedback.findUnique({
     where: { id },
-    include: { user: { select: { name: true, email: true } }, events: true },
+    include: { user: { select: { name: true, email: true } }, events: true, files: true },
   });
   return t ? toRow(t, Date.now()) : null;
 }

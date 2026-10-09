@@ -1,8 +1,10 @@
 /**
  * Tools Hub – mail relay (Google Apps Script)
  * -------------------------------------------
- * The Tools Hub server POSTs { secret, to, subject, html, text } here and this
- * script sends the email from the Google account that owns the script.
+ * The Tools Hub server POSTs { secret, to, subject, html, text, replyTo? } here
+ * and this script sends the email from the Google account that owns the script.
+ * It is used for sign-up codes, ticket confirmations and updates, and the
+ * "ticket assigned to you" emails sent to team members.
  *
  * Safety: requests without the shared secret are rejected, and mail can only
  * go to addresses on the allowed company domain(s), so it can't be abused as
@@ -34,19 +36,27 @@ function doPost(e) {
     var m = to.match(/^[^\s@,;]+@([^\s@,;]+)$/);
     if (!m || domains.indexOf(m[1]) === -1) throw new Error('Recipient is not on an allowed domain.');
 
+    // Optional reply-to (so a reply to an assignment email reaches the requester).
+    // It is only honoured for company addresses, like the recipient.
+    var replyTo = String(req.replyTo || '').trim().toLowerCase();
+    var rm = replyTo.match(/^[^\s@,;]+@([^\s@,;]+)$/);
+    if (!rm || domains.indexOf(rm[1]) === -1) replyTo = '';
+
     var subject = String(req.subject || '').replace(/[\r\n]+/g, ' ').slice(0, 200);
     var html = String(req.html || '');
     if (!subject || !html) throw new Error('Subject and html are required.');
     if (html.length > MAX_HTML) throw new Error('Message too large.');
     if (MailApp.getRemainingDailyQuota() < 1) throw new Error('Daily email quota reached.');
 
-    MailApp.sendEmail({
+    var message = {
       to: to,
       subject: subject,
       htmlBody: html,
       body: String(req.text || subject).slice(0, 5000),
       name: props.getProperty('SENDER_NAME') || 'Ogilvy Tools Hub'
-    });
+    };
+    if (replyTo) message.replyTo = replyTo;
+    MailApp.sendEmail(message);
     return json_({ ok: true });
   } catch (err) {
     return json_({ ok: false, error: String(err && err.message || err) });

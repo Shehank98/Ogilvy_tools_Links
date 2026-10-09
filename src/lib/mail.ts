@@ -15,6 +15,8 @@ export async function sendMail(opts: {
   subject: string;
   html: string;
   text: string;
+  /** Where a reply should go (the relay only accepts company addresses). */
+  replyTo?: string;
 }): Promise<void> {
   const url = process.env.APPS_SCRIPT_URL;
   const secret = process.env.APPS_SCRIPT_SECRET;
@@ -176,7 +178,8 @@ export async function sendAdminNewTicketEmail(
   to: string,
   who: string,
   priority: string,
-  t: TicketMail
+  t: TicketMail,
+  attachments = 0
 ) {
   await sendMail({
     to,
@@ -184,7 +187,58 @@ export async function sendAdminNewTicketEmail(
     text: `${who} raised ${t.code}: ${t.title} (${priority} priority)`,
     html: layout(
       `New ${t.kind.toLowerCase()} raised`,
-      `<p>${esc(who)} raised a ${esc(priority)}-priority ticket.</p>${ticketTable(t)}`
+      `<p>${esc(who)} raised a ${esc(priority)}-priority ticket${
+        attachments ? ` with ${attachments} attachment${attachments === 1 ? "" : "s"}` : ""
+      }.</p>${ticketTable(t)}`
+    ),
+  });
+}
+
+const appLink = (path: string) => {
+  const base = process.env.APP_URL?.replace(/\/$/, "");
+  return base ? `${base}${path}` : null;
+};
+
+/** Tells a team member a ticket has just been assigned to them. */
+export async function sendAssignmentEmail(
+  to: string,
+  assignee: string,
+  t: TicketMail & {
+    id: string;
+    priority: string;
+    requester: string;
+    requesterEmail: string;
+    description: string;
+    attachments: number;
+    assignedBy?: string;
+    coAssignees: string[];
+  }
+) {
+  const first = assignee.trim().split(/\s+/)[0] || "there";
+  const url = appLink(`/admin/feedback/${t.id}`);
+  const excerpt = t.description.length > 700 ? `${t.description.slice(0, 700)}...` : t.description;
+  await sendMail({
+    to,
+    replyTo: t.requesterEmail || undefined,
+    subject: `[${t.code}] Assigned to you: ${t.title}`,
+    text: `${first}, ticket ${t.code} (${t.priority} priority ${t.kind.toLowerCase()}) has been assigned to you: ${t.title}${url ? `\nOpen it: ${url}` : ""}`,
+    html: layout(
+      `Ticket ${t.code} is assigned to you`,
+      `<p>Hi ${esc(first)}, you've been assigned this ${esc(t.kind.toLowerCase())}${
+        t.coAssignees.length ? ` together with <strong>${esc(t.coAssignees.join(", "))}</strong>` : ""
+      }.</p>${ticketTable(t)}
+<table style="border-collapse:collapse;margin:0 0 14px;font-size:14px">
+<tr><td style="padding:3px 16px 3px 0;color:#6e6e6e">Priority</td><td><strong>${esc(t.priority)}</strong></td></tr>
+<tr><td style="padding:3px 16px 3px 0;color:#6e6e6e">Raised by</td><td><strong>${esc(t.requester)}</strong>${t.requesterEmail ? ` &lt;${esc(t.requesterEmail)}&gt;` : ""}</td></tr>
+<tr><td style="padding:3px 16px 3px 0;color:#6e6e6e">Attachments</td><td><strong>${t.attachments ? `${t.attachments} file${t.attachments === 1 ? "" : "s"} (open the ticket to view)` : "None"}</strong></td></tr>
+</table>
+<p style="background:#f6f6f6;border-left:3px solid #ee3124;padding:10px 14px;white-space:pre-wrap">${esc(excerpt)}</p>${
+        url
+          ? `<p style="margin:18px 0"><a href="${esc(url)}" style="background:#ee3124;color:#fff;text-decoration:none;padding:10px 18px;font-weight:bold;display:inline-block">Open ticket ${esc(t.code)}</a></p>`
+          : ""
+      }<p style="color:#6e6e6e;font-size:13px">You can reply to this email to reach ${esc(t.requester || "the requester")} directly.${
+        t.attachments ? " Attachments are deleted automatically once the ticket is resolved." : ""
+      }</p>`
     ),
   });
 }
