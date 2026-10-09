@@ -24,6 +24,7 @@ export type FeedbackFilters = {
   kind?: FeedbackKind;
   priority?: FeedbackPriority;
   target?: string; // a tool/coming-soon id, or "general"
+  assignee?: string; // a team member's name, or "unassigned"
   q?: string;
 };
 
@@ -44,6 +45,7 @@ export function parseFilters(sp: Params): FeedbackFilters {
     kind: pick(one(sp.kind), ["BUG", "SUGGESTION", "IDEA"] as const),
     priority: pick(one(sp.priority), ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const),
     target: one(sp.target)?.slice(0, 60),
+    assignee: one(sp.assignee)?.slice(0, 60),
     q: one(sp.q)?.slice(0, 100),
   };
 }
@@ -73,6 +75,7 @@ export type TicketRow = {
   targetType: string;
   priority: FeedbackPriority;
   priorityLabel: string;
+  assignedTo: string[];
   status: FeedbackStatus;
   statusLabel: string;
   reporterName: string;
@@ -114,6 +117,7 @@ function toRow(t: Loaded, now: number): TicketRow {
     targetType: t.targetType,
     priority: t.priority,
     priorityLabel: PRIORITY_LABEL[t.priority],
+    assignedTo: t.assignedTo,
     status: t.status,
     statusLabel: STATUS_LABEL[t.status],
     reporterName: t.user?.name ?? "",
@@ -142,6 +146,8 @@ export async function loadTickets(f: FeedbackFilters): Promise<TicketRow[]> {
   if (f.kind) where.kind = f.kind;
   if (f.priority) where.priority = f.priority;
   if (f.target) where.targetId = f.target;
+  if (f.assignee === "unassigned") where.assignedTo = { isEmpty: true };
+  else if (f.assignee) where.assignedTo = { has: f.assignee };
   if (f.q) {
     const contains = { contains: f.q, mode: "insensitive" as const };
     where.OR = [
@@ -222,6 +228,8 @@ export type Summary = {
   byKind: Count[];
   byPriority: Count[];
   byTool: Count[];
+  /** Tickets per person (a ticket shared by two people counts for both). */
+  byAssignee: (Count & { open: number; resolved: number })[];
 };
 
 const avg = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null);
@@ -252,6 +260,19 @@ export function summarize(rows: TicketRow[]): Summary {
   const tools = new Map<string, number>();
   for (const r of rows) tools.set(r.tool, (tools.get(r.tool) ?? 0) + 1);
 
+  const people = new Map<string, { count: number; open: number; resolved: number }>();
+  const bump = (name: string, r: TicketRow) => {
+    const e = people.get(name) ?? { count: 0, open: 0, resolved: 0 };
+    e.count++;
+    if (r.openForMs !== null) e.open++;
+    if (r.status === "DONE") e.resolved++;
+    people.set(name, e);
+  };
+  for (const r of rows) {
+    if (r.assignedTo.length === 0) bump("Unassigned", r);
+    else r.assignedTo.forEach((n) => bump(n, r));
+  }
+
   const considered = rows.length - dismissed;
   return {
     total: rows.length,
@@ -277,6 +298,9 @@ export function summarize(rows: TicketRow[]): Summary {
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .slice(0, 10)
       .map(([name, count]) => ({ key: name, label: name, count })),
+    byAssignee: [...people.entries()]
+      .sort((a, b) => (a[0] === "Unassigned" ? 1 : b[0] === "Unassigned" ? -1 : b[1].count - a[1].count || a[0].localeCompare(b[0])))
+      .map(([name, v]) => ({ key: name, label: name, ...v })),
   };
 }
 
@@ -319,6 +343,7 @@ export function filterSummary(f: FeedbackFilters, targetName?: string): string[]
   if (f.status) out.push(`Status: ${STATUS_LABEL[f.status]}`);
   if (f.priority) out.push(`Priority: ${PRIORITY_LABEL[f.priority]}`);
   if (f.target) out.push(`Tool: ${targetName ?? f.target}`);
+  if (f.assignee) out.push(`Assigned to: ${f.assignee === "unassigned" ? "Unassigned" : f.assignee}`);
   if (f.q) out.push(`Search: "${f.q}"`);
   return out;
 }

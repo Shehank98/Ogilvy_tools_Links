@@ -8,6 +8,7 @@ import { getCurrentUser } from "@/lib/user-auth";
 import { FEATURES } from "@/lib/features";
 import { sendTicketUpdateEmail } from "@/lib/mail";
 import { KIND_LABEL, STATUS_LABEL, ticketCode } from "@/lib/tickets";
+import { cleanAssignees, formatAssignees } from "@/lib/team";
 import { feedbackSchema, feedbackUpdateSchema } from "@/lib/validation";
 import { firstZodError, type ActionState } from "./state";
 
@@ -71,22 +72,49 @@ export async function updateFeedback(
   const statusChanged = current.status !== d.status;
   const noteChanged = !!note && note !== current.publicNote;
 
+  // Assignment: only known team members are accepted.
+  const assignees = cleanAssignees(formData.getAll("assignedTo"));
+  const sameTeam =
+    assignees.length === current.assignedTo.length &&
+    assignees.every((n) => current.assignedTo.includes(n));
+  const assignmentChanged = !sameTeam;
+
   await prisma.feedback.update({
     where: { id },
     data: {
       status: d.status,
       adminNotes: d.adminNotes || null,
       publicNote: note,
-      // The requester's timeline only records changes they can see.
-      ...(statusChanged || noteChanged
-        ? { events: { create: { status: d.status, note: noteChanged ? note : null } } }
+      assignedTo: assignees,
+      // The timeline records each visible change.
+      ...(statusChanged || noteChanged || assignmentChanged
+        ? {
+            events: {
+              create: [
+                ...(statusChanged || noteChanged
+                  ? [{ status: d.status, note: noteChanged ? note : null }]
+                  : []),
+                ...(assignmentChanged
+                  ? [
+                      {
+                        status: d.status,
+                        note: assignees.length
+                          ? `Assigned to ${formatAssignees(assignees)}`
+                          : "Unassigned",
+                      },
+                    ]
+                  : []),
+              ],
+            },
+          }
         : {}),
     },
   });
 
   let emailed = false;
   const to = current.user?.email ?? current.email;
-  if (d.notify && to && (statusChanged || noteChanged)) {
+  const changedForRequester = statusChanged || noteChanged || assignmentChanged;
+  if (d.notify && to && changedForRequester) {
     try {
       await sendTicketUpdateEmail(
         to,
@@ -98,7 +126,8 @@ export async function updateFeedback(
           tool: current.targetName,
         },
         STATUS_LABEL[d.status],
-        note
+        note,
+        assignees
       );
       emailed = true;
     } catch (e) {
@@ -109,7 +138,7 @@ export async function updateFeedback(
   revalidatePath("/tickets");
   return {
     success: `Feedback updated.${
-      d.notify && (statusChanged || noteChanged)
+      d.notify && changedForRequester
         ? emailed
           ? " Requester emailed."
           : " (Email could not be sent.)"

@@ -137,6 +137,12 @@ export async function buildWorkbook(
   kv("Suggestions & ideas", summary.suggestions);
   at += 1;
 
+  section("Workload by person");
+  summary.byAssignee.forEach((p) =>
+    kv(p.label, `${p.count} tickets (${p.open} open, ${p.resolved} done)`)
+  );
+  at += 1;
+
   for (const [name, list] of [
     ["By status", summary.byStatus],
     ["By priority", summary.byPriority],
@@ -158,6 +164,7 @@ export async function buildWorkbook(
       { header: "Priority", width: 11 },
       { header: "Status", width: 12 },
       { header: "Raised by", width: 22 },
+      { header: "Assigned to", width: 26 },
       { header: "Email", width: 28 },
       { header: "Raised (UTC)", width: 18 },
       { header: "Last updated (UTC)", width: 18 },
@@ -171,7 +178,7 @@ export async function buildWorkbook(
     ],
     rows.map((t) => [
       t.code, t.kindLabel, t.title, t.tool, t.priorityLabel, t.statusLabel,
-      t.reporterName, t.reporterEmail, t.createdAt, t.updatedAt, t.resolvedAt,
+      t.reporterName, t.assignedTo.join(", ") || "Unassigned", t.reporterEmail, t.createdAt, t.updatedAt, t.resolvedAt,
       t.timeToResolveMs == null ? "" : fmtDuration(t.timeToResolveMs),
       t.openForMs == null ? "" : fmtDuration(t.openForMs),
       t.description, t.steps, t.requesterNote, t.internalNotes,
@@ -191,6 +198,7 @@ export async function buildWorkbook(
       { header: "Bug", width: 38, wrap: true },
       { header: "Priority", width: 11 },
       { header: "Reported by", width: 22 },
+      { header: "Fixed by / assigned to", width: 26 },
       { header: "Reported (UTC)", width: 18 },
       { header: "Fixed (UTC)", width: 18 },
       { header: "Time to fix", width: 13 },
@@ -200,7 +208,7 @@ export async function buildWorkbook(
     ],
     fixed.map((t) => [
       t.code, t.tool, t.title, t.priorityLabel, t.reporterName || t.reporterEmail,
-      t.createdAt, t.resolvedAt, fmtDuration(t.timeToResolveMs),
+      t.assignedTo.join(", ") || "Unassigned", t.createdAt, t.resolvedAt, fmtDuration(t.timeToResolveMs),
       t.description, t.requesterNote, t.internalNotes,
     ]),
     (row, i) => {
@@ -221,6 +229,7 @@ export async function buildWorkbook(
       { header: "Bug", width: 38, wrap: true },
       { header: "Priority", width: 11 },
       { header: "Status", width: 12 },
+      { header: "Assigned to", width: 26 },
       { header: "Reported by", width: 22 },
       { header: "Reported (UTC)", width: 18 },
       { header: "Open for", width: 12 },
@@ -229,7 +238,7 @@ export async function buildWorkbook(
     ],
     openBugs.map((t) => [
       t.code, t.tool, t.title, t.priorityLabel, t.statusLabel,
-      t.reporterName || t.reporterEmail, t.createdAt, fmtDuration(t.openForMs),
+      t.assignedTo.join(", ") || "Unassigned", t.reporterName || t.reporterEmail, t.createdAt, fmtDuration(t.openForMs),
       t.description, t.requesterNote,
     ]),
     (row, i) => colorise(row, 5, 4, openBugs[i])

@@ -147,7 +147,16 @@ export function buildPdf(
     headStyles: head, styles: base, alternateRowStyles: { fillColor: SOFT },
     columnStyles: { 1: { halign: "right", cellWidth: 24 } },
   });
-  void leftEnd;
+  autoTable(doc, {
+    startY: leftEnd + 7,
+    margin: { left: M, right: PAGE_W - M - half },
+    head: [["Workload by person", "Tickets", "Open", "Done"]],
+    body: summary.byAssignee.length
+      ? summary.byAssignee.slice(0, 9).map((p) => [t(p.label, 36), String(p.count), String(p.open), String(p.resolved)])
+      : [["No tickets", "0", "0", "0"]],
+    headStyles: head, styles: base, alternateRowStyles: { fillColor: SOFT },
+    columnStyles: { 1: { halign: "right", cellWidth: 18 }, 2: { halign: "right", cellWidth: 16 }, 3: { halign: "right", cellWidth: 16 } },
+  });
 
   /* ------------------------------ bug fixing details ------------------------- */
   const section = (title: string, sub: string) => {
@@ -189,16 +198,16 @@ export function buildPdf(
     autoTable(doc, {
       ...tableDefaults,
       startY: 31,
-      head: [["Ticket", "Tool / area", "Bug", "Priority", "Reported by", "Reported", "Fixed", "Time to fix", "What was wrong", "Fix details"]],
+      head: [["Ticket", "Tool / area", "Bug", "Priority", "Reported by", "Fixed by", "Reported", "Fixed", "Time to fix", "What was wrong", "Fix details"]],
       body: fixed.map<RowInput>((r) => [
         r.code, t(r.tool, 30), t(r.title, 90), prioCell(r), t(r.reporterName || r.reporterEmail, 28),
-        fmtDate(r.createdAt), fmtDate(r.resolvedAt), fmtDuration(r.timeToResolveMs),
+        t(r.assignedTo.join(", ") || "-", 60), fmtDate(r.createdAt), fmtDate(r.resolvedAt), fmtDuration(r.timeToResolveMs),
         t(r.description, 240), t(r.requesterNote || "(no fix note recorded)", 420),
       ]),
       columnStyles: {
-        0: { cellWidth: 15, fontStyle: "bold" }, 1: { cellWidth: 22 }, 2: { cellWidth: 36 }, 3: { cellWidth: 13 },
-        4: { cellWidth: 22 }, 5: { cellWidth: 17 }, 6: { cellWidth: 17 }, 7: { cellWidth: 14 },
-        8: { cellWidth: 50 }, 9: { cellWidth: "auto" },
+        0: { cellWidth: 14, fontStyle: "bold" }, 1: { cellWidth: 19 }, 2: { cellWidth: 30 }, 3: { cellWidth: 12 },
+        4: { cellWidth: 19 }, 5: { cellWidth: 22 }, 6: { cellWidth: 15 }, 7: { cellWidth: 15 }, 8: { cellWidth: 12 },
+        9: { cellWidth: 44 }, 10: { cellWidth: "auto" },
       },
     });
   } else {
@@ -214,14 +223,14 @@ export function buildPdf(
     autoTable(doc, {
       ...tableDefaults,
       startY: 31,
-      head: [["Ticket", "Tool / area", "Bug", "Priority", "Status", "Reported by", "Reported", "Open for", "Latest note"]],
+      head: [["Ticket", "Tool / area", "Bug", "Priority", "Status", "Assigned to", "Reported by", "Reported", "Open for", "Latest note"]],
       body: openBugs.map<RowInput>((r) => [
-        r.code, t(r.tool, 30), t(r.title, 100), prioCell(r), statusCell(r), t(r.reporterName || r.reporterEmail, 28),
-        fmtDate(r.createdAt), fmtDuration(r.openForMs), t(r.requesterNote || "-", 260),
+        r.code, t(r.tool, 30), t(r.title, 100), prioCell(r), statusCell(r), t(r.assignedTo.join(", ") || "Unassigned", 60),
+        t(r.reporterName || r.reporterEmail, 28), fmtDate(r.createdAt), fmtDuration(r.openForMs), t(r.requesterNote || "-", 260),
       ]),
       columnStyles: {
-        0: { cellWidth: 15, fontStyle: "bold" }, 1: { cellWidth: 26 }, 2: { cellWidth: 55 }, 3: { cellWidth: 15 },
-        4: { cellWidth: 18 }, 5: { cellWidth: 28 }, 6: { cellWidth: 18 }, 7: { cellWidth: 15 }, 8: { cellWidth: "auto" },
+        0: { cellWidth: 14, fontStyle: "bold" }, 1: { cellWidth: 22 }, 2: { cellWidth: 44 }, 3: { cellWidth: 14 },
+        4: { cellWidth: 17 }, 5: { cellWidth: 26 }, 6: { cellWidth: 24 }, 7: { cellWidth: 17 }, 8: { cellWidth: 14 }, 9: { cellWidth: "auto" },
       },
     });
   } else {
@@ -234,15 +243,15 @@ export function buildPdf(
     autoTable(doc, {
       ...tableDefaults,
       startY: 31,
-      head: [["Ticket", "Type", "Title", "Tool / area", "Priority", "Status", "Raised by", "Raised", "Resolved", "Time to resolve"]],
+      head: [["Ticket", "Type", "Title", "Tool / area", "Priority", "Status", "Assigned to", "Raised by", "Raised", "Resolved", "Time to resolve"]],
       body: rows.map<RowInput>((r) => [
         r.code, r.kindLabel, t(r.title, 110), t(r.tool, 32), prioCell(r), statusCell(r),
-        t(r.reporterName || r.reporterEmail || "-", 30), fmtDate(r.createdAt), fmtDate(r.resolvedAt),
+        t(r.assignedTo.join(", ") || "-", 60), t(r.reporterName || r.reporterEmail || "-", 30), fmtDate(r.createdAt), fmtDate(r.resolvedAt),
         r.timeToResolveMs == null ? (r.openForMs == null ? "-" : `open ${fmtDuration(r.openForMs)}`) : fmtDuration(r.timeToResolveMs),
       ]),
       columnStyles: {
-        0: { cellWidth: 15, fontStyle: "bold" }, 1: { cellWidth: 20 }, 2: { cellWidth: "auto" }, 3: { cellWidth: 32 },
-        4: { cellWidth: 16 }, 5: { cellWidth: 18 }, 6: { cellWidth: 32 }, 7: { cellWidth: 20 }, 8: { cellWidth: 20 }, 9: { cellWidth: 24 },
+        0: { cellWidth: 14, fontStyle: "bold" }, 1: { cellWidth: 18 }, 2: { cellWidth: "auto" }, 3: { cellWidth: 26 },
+        4: { cellWidth: 14 }, 5: { cellWidth: 17 }, 6: { cellWidth: 28 }, 7: { cellWidth: 24 }, 8: { cellWidth: 18 }, 9: { cellWidth: 18 }, 10: { cellWidth: 20 },
       },
     });
   } else {

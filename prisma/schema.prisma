@@ -105,6 +105,8 @@ model Feedback {
   adminNotes String?
   // Shown to the requester on their ticket (adminNotes stays internal).
   publicNote String?
+  // Team members this ticket is assigned to (names from src/lib/team.ts).
+  assignedTo String[]         @default([])
   events     FeedbackEvent[]
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt

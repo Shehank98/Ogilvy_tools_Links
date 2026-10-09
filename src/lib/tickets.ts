@@ -6,7 +6,7 @@ export const ticketCode = (n: number) => `TH-${String(n).padStart(4, "0")}`;
 export const STATUS_LABEL: Record<FeedbackStatus, string> = {
   NEW: "Received",
   REVIEWING: "In review",
-  PLANNED: "Planned",
+  PLANNED: "Work in progress",
   DONE: "Done",
   DISMISSED: "Closed",
 };

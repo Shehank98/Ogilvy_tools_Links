@@ -138,6 +138,15 @@ export default async function TicketsPage({
                 </ol>
               )}
 
+              {t.assignedTo.length > 0 && (
+                <p className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-gray-600">
+                  <span aria-hidden>👤</span> Handled by
+                  {t.assignedTo.map((n) => (
+                    <span key={n} className="rounded-full bg-gray-900 px-2.5 py-0.5 font-medium text-white">{n}</span>
+                  ))}
+                </p>
+              )}
+
               {t.publicNote && (
                 <p className="mt-3 whitespace-pre-wrap rounded-md border-l-4 border-brand bg-gray-50 px-3 py-2 text-sm text-gray-700">
                   <strong>Automation team:</strong> {t.publicNote}

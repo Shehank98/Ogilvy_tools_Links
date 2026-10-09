@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card } from "@/components/Card";
-import { CountUp } from "@/components/CountUp";
+import { BreakdownRow, KpiGrid, WorkloadCard } from "@/components/admin/FeedbackOverview";
 import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
 import {
   filtersToQuery,
@@ -13,18 +13,11 @@ import {
   type FeedbackFilters,
 } from "@/lib/feedback-report";
 import { STATUS_LABEL } from "@/lib/tickets";
+import { ASSIGNEES } from "@/lib/team";
 
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 25;
-
-const STATUS_BAR: Record<string, string> = {
-  NEW: "bg-blue-500",
-  REVIEWING: "bg-amber-500",
-  PLANNED: "bg-brand",
-  DONE: "bg-emerald-500",
-  DISMISSED: "bg-gray-400",
-};
 
 const inputClass =
   "w-full rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-sm text-gray-900 shadow-sm focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand";
@@ -49,35 +42,6 @@ function presets() {
   ];
 }
 
-function Stat({
-  label,
-  value,
-  sub,
-  accent,
-  index = 0,
-  suffix,
-}: {
-  label: string;
-  value: string | number;
-  sub?: string;
-  accent?: boolean;
-  index?: number;
-  suffix?: string;
-}) {
-  return (
-    <Card
-      style={{ "--i": index } as React.CSSProperties}
-      className={`anim-fade-up stagger !p-4 transition duration-300 hover:-translate-y-0.5 hover:shadow-md ${accent ? "border-t-4 border-t-brand" : ""}`}
-    >
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900">
-        {typeof value === "number" ? <CountUp to={value} suffix={suffix} /> : value}
-      </p>
-      {sub && <p className="mt-0.5 text-xs text-gray-500">{sub}</p>}
-    </Card>
-  );
-}
-
 export default async function AdminFeedbackPage({
   searchParams,
 }: {
@@ -96,7 +60,7 @@ export default async function AdminFeedbackPage({
   const page = Math.max(1, Math.min(Number(Array.isArray(sp.page) ? sp.page[0] : sp.page) || 1, Math.ceil(rows.length / PAGE_SIZE) || 1));
   const visible = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const q = (extra: Record<string, string> = {}) => filtersToQuery(filters, extra);
-  const hasFilters = !!(filters.from || filters.to || filters.status || filters.kind || filters.priority || filters.target || filters.q || filters.basis !== "raised");
+  const hasFilters = !!(filters.from || filters.to || filters.status || filters.kind || filters.priority || filters.target || filters.assignee || filters.q || filters.basis !== "raised");
 
   return (
     <div className="space-y-6">
@@ -177,6 +141,16 @@ export default async function AdminFeedbackPage({
               </select>
             </label>
             <label className="text-xs font-medium text-gray-600">
+              Assigned to
+              <select name="assignee" defaultValue={filters.assignee ?? ""} className={`${inputClass} mt-1`}>
+                <option value="">Everyone</option>
+                <option value="unassigned">Unassigned</option>
+                {ASSIGNEES.map((n) => (
+                  <option key={n} value={n}>{n}</option>
+                ))}
+              </select>
+            </label>
+            <label className="text-xs font-medium text-gray-600">
               Tool / area
               <select name="target" defaultValue={filters.target ?? ""} className={`${inputClass} mt-1`}>
                 <option value="">All tools</option>
@@ -219,68 +193,11 @@ export default async function AdminFeedbackPage({
       </Card>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-        <Stat index={0} label="Total tickets" value={summary.total} sub={`${summary.bugs.total} bugs · ${summary.suggestions} suggestions/ideas`} />
-        <Stat index={1} label="Open" value={summary.open} sub={`${summary.urgentOpen} critical / high`} accent={summary.urgentOpen > 0} />
-        <Stat index={2} label="Resolved" value={summary.resolved} sub={`${summary.dismissed} closed without action`} />
-        <Stat index={3} label="Resolution rate" value={Math.round(summary.resolutionRate * 100)} suffix="%" sub="of tickets not closed" />
-        <Stat index={4} label="Avg time to resolve" value={fmtDuration(summary.avgResolveMs)} sub={`median ${fmtDuration(summary.medianResolveMs)}`} />
-        <Stat index={5} label="Bugs fixed" value={`${summary.bugs.resolved} / ${summary.bugs.total}`} sub={`avg fix ${fmtDuration(summary.bugs.avgFixMs)}`} />
-      </div>
+      <KpiGrid summary={summary} />
 
-      {/* Breakdowns */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <h2 className="text-sm font-semibold text-gray-900">Status distribution</h2>
-          {summary.total === 0 ? (
-            <p className="mt-3 text-sm text-gray-500">No tickets in this selection.</p>
-          ) : (
-            <>
-              <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-gray-100">
-                {summary.byStatus.filter((s) => s.count).map((s, i) => (
-                  <div
-                    key={s.key}
-                    title={`${s.label}: ${s.count}`}
-                    className={`anim-grow-x ${STATUS_BAR[s.key]}`}
-                    style={{ width: `${(s.count / summary.total) * 100}%`, animationDelay: `${0.1 + i * 0.12}s` }}
-                  />
-                ))}
-              </div>
-              <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-xs text-gray-600">
-                {summary.byStatus.map((s) => (
-                  <li key={s.key} className="flex items-center gap-1.5">
-                    <span className={`h-2.5 w-2.5 rounded-sm ${STATUS_BAR[s.key]}`} />
-                    {s.label} <strong className="text-gray-900">{s.count}</strong>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-4 grid grid-cols-2 gap-3 border-t border-gray-100 pt-3 text-xs text-gray-600 sm:grid-cols-4">
-                {summary.byPriority.map((p) => (
-                  <div key={p.key}>
-                    <PriorityBadge priority={p.key} label={p.label} />{" "}
-                    <strong className="ml-1 text-gray-900">{p.count}</strong>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-        </Card>
-        <Card>
-          <h2 className="text-sm font-semibold text-gray-900">Most feedback by tool</h2>
-          {summary.byTool.length === 0 ? (
-            <p className="mt-3 text-sm text-gray-500">Nothing yet.</p>
-          ) : (
-            <ol className="mt-2 space-y-1.5 text-sm">
-              {summary.byTool.slice(0, 5).map((t) => (
-                <li key={t.key} className="flex items-center justify-between gap-3">
-                  <span className="truncate text-gray-700">{t.label}</span>
-                  <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-700">{t.count}</span>
-                </li>
-              ))}
-            </ol>
-          )}
-        </Card>
-      </div>
+      {/* Breakdowns + who is working on what */}
+      <BreakdownRow summary={summary} />
+      <WorkloadCard summary={summary} baseQuery={q()} />
 
       {/* Table */}
       <div className="flex items-center justify-between text-xs text-gray-500">
@@ -301,7 +218,7 @@ export default async function AdminFeedbackPage({
           <table className="w-full text-left text-sm">
             <thead className="border-b border-gray-200 bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
               <tr>
-                {["Ticket", "Type", "Title", "Priority", "Status", "Raised", "Resolution", ""].map((h) => (
+                {["Ticket", "Type", "Title", "Priority", "Status", "Assigned to", "Raised", "Resolution", ""].map((h) => (
                   <th key={h} className="px-4 py-3 font-semibold">{h}</th>
                 ))}
               </tr>
@@ -330,6 +247,9 @@ export default async function AdminFeedbackPage({
                   </td>
                   <td className="px-4 py-3"><PriorityBadge priority={t.priority} label={t.priorityLabel} /></td>
                   <td className="px-4 py-3"><StatusBadge status={t.status} label={t.statusLabel} /></td>
+                  <td className="max-w-[11rem] px-4 py-3 text-xs text-gray-700">
+                    {t.assignedTo.length ? t.assignedTo.join(", ") : <span className="text-gray-400">Unassigned</span>}
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3 text-gray-600">{fmtDate(t.createdAt)}</td>
                   <td className="whitespace-nowrap px-4 py-3 text-xs">
                     {t.resolvedAt ? (

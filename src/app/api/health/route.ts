@@ -35,7 +35,7 @@ export async function GET() {
     try {
       await prisma.tool.count();
       await prisma.user.count();
-      await prisma.feedback.findFirst({ select: { ticketNo: true } });
+      await prisma.feedback.findFirst({ select: { ticketNo: true, assignedTo: true } });
       await prisma.feedbackEvent.count();
       checks.migrations = "ok (tables exist)";
     } catch (e) {

@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { isAdmin } from "@/lib/auth";
 import { ActionForm } from "@/components/ActionForm";
-import { Field, TextInput } from "@/components/fields";
+import { Field } from "@/components/fields";
+import { PasswordInput } from "@/components/PasswordInput";
 import { login } from "@/lib/actions/auth";
 
 export const dynamic = "force-dynamic";
@@ -18,9 +19,8 @@ export default async function AdminLoginPage() {
         </p>
         <ActionForm action={login} submitLabel="Sign in">
           <Field label="Admin password">
-            <TextInput
+            <PasswordInput
               name="password"
-              type="password"
               autoFocus
               required
               autoComplete="current-password"

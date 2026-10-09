@@ -151,7 +151,8 @@ export async function sendTicketUpdateEmail(
   name: string,
   t: TicketMail,
   statusLabel: string,
-  note: string | null
+  note: string | null,
+  assignees: string[] = []
 ) {
   const first = name.trim().split(/\s+/)[0] || "there";
   await sendMail({
@@ -160,7 +161,9 @@ export async function sendTicketUpdateEmail(
     text: `Ticket ${t.code} is now ${statusLabel}.${note ? " " + note : ""}`,
     html: layout(
       `Ticket ${t.code} updated`,
-      `<p>Hi ${esc(first)}, your ticket is now <strong>${esc(statusLabel)}</strong>.</p>${
+      `<p>Hi ${esc(first)}, your ticket is now <strong>${esc(statusLabel)}</strong>${
+        assignees.length ? ` and is being handled by <strong>${esc(assignees.join(", "))}</strong>` : ""
+      }.</p>${
         note
           ? `<p style="background:#f6f6f6;border-left:3px solid #ee3124;padding:10px 14px;white-space:pre-wrap">${esc(note)}</p>`
           : ""

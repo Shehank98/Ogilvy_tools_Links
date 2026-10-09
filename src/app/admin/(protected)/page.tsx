@@ -2,10 +2,19 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/Card";
 import { CountUp } from "@/components/CountUp";
+import {
+  BreakdownRow,
+  KpiGrid,
+  RecentTickets,
+  WorkloadCard,
+} from "@/components/admin/FeedbackOverview";
+import { loadTickets, summarize } from "@/lib/feedback-report";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
+  const tickets = await loadTickets({ basis: "raised" });
+  const summary = summarize(tickets);
   const [toolCount, newTicketCount, openBugCount, userCount, topTools] =
     await Promise.all([
       prisma.tool.count(),
@@ -54,6 +63,26 @@ export default async function AdminDashboardPage() {
           );
         })}
       </div>
+
+      <section className="space-y-4">
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Feedback &amp; tickets</h2>
+            <p className="text-sm text-gray-500">Live overview of everything staff have reported, all time.</p>
+          </div>
+          <Link href="/admin/feedback" className="text-sm font-medium text-brand hover:text-brand-dark">
+            Filters &amp; Excel / PDF reports →
+          </Link>
+        </div>
+        <KpiGrid summary={summary} />
+        <BreakdownRow summary={summary} />
+        <div className="grid items-start gap-4 lg:grid-cols-3">
+          <WorkloadCard summary={summary} />
+          <div className="lg:col-span-2">
+            <RecentTickets rows={tickets} />
+          </div>
+        </div>
+      </section>
 
       <section>
         <h2 className="mb-3 text-lg font-semibold text-gray-900">

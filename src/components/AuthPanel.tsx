@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { PasswordInput } from "@/components/PasswordInput";
 import {
   loginUser,
   registerUser,
@@ -108,7 +109,7 @@ export function AuthPanel({ domain }: { domain: string }) {
             <input name="email" type="email" required autoComplete="username" placeholder={`firstname.lastname@${domain}`} defaultValue={email} className={input} />
           </Field>
           <Field label="Password">
-            <input name="password" type="password" required autoComplete="current-password" className={input} />
+            <PasswordInput name="password" required autoComplete="current-password" className={input} />
           </Field>
           <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Signing in…</>) : "Sign in"}</button>
           <div className="flex justify-between">
@@ -133,9 +134,9 @@ export function AuthPanel({ domain }: { domain: string }) {
           <Field label="Full name"><input name="name" required maxLength={80} autoComplete="name" className={input} /></Field>
           <Field label="Ogilvy email"><input name="email" type="email" required autoComplete="email" placeholder={`firstname.lastname@${domain}`} defaultValue={email} className={input} /></Field>
           <Field label="Password" hint="At least 6 characters, with a letter and a number.">
-            <input name="password" type="password" required autoComplete="new-password" className={input} />
+            <PasswordInput name="password" required autoComplete="new-password" className={input} />
           </Field>
-          <Field label="Confirm password"><input name="confirm" type="password" required autoComplete="new-password" className={input} /></Field>
+          <Field label="Confirm password"><PasswordInput name="confirm" required autoComplete="new-password" className={input} /></Field>
           <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Creating…</>) : "Create account & send code"}</button>
         </form>
         </div>
@@ -190,8 +191,8 @@ export function AuthPanel({ domain }: { domain: string }) {
         >
           <h2 className="font-serif text-xl font-bold text-black">Choose a new password</h2>
           <Field label="Reset code"><input name="code" inputMode="numeric" pattern="\d{6}" maxLength={6} required autoFocus autoComplete="one-time-code" placeholder="000000" className={`${input} text-center text-xl font-bold tracking-[0.4em]`} /></Field>
-          <Field label="New password" hint="At least 6 characters, with a letter and a number."><input name="password" type="password" required autoComplete="new-password" className={input} /></Field>
-          <Field label="Confirm new password"><input name="confirm" type="password" required autoComplete="new-password" className={input} /></Field>
+          <Field label="New password" hint="At least 6 characters, with a letter and a number."><PasswordInput name="password" required autoComplete="new-password" className={input} /></Field>
+          <Field label="Confirm new password"><PasswordInput name="confirm" required autoComplete="new-password" className={input} /></Field>
           <button type="submit" disabled={pending} className={primary}>{pending ? (<><span className="spinner" />Saving…</>) : "Update password"}</button>
           <button type="button" className={linkBtn} onClick={() => go("forgot")}>Start again</button>
         </form>

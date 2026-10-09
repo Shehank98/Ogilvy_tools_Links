@@ -7,6 +7,8 @@ import { PriorityBadge, StatusBadge } from "@/components/StatusBadge";
 import { deleteFeedback, updateFeedback } from "@/lib/actions/feedback";
 import { fmtDateTime, fmtDuration, loadTicket } from "@/lib/feedback-report";
 import { PROGRESS_STEPS, STATUS_LABEL } from "@/lib/tickets";
+import { ASSIGNEES } from "@/lib/team";
+import { AssignPicker } from "@/components/AssignPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +82,9 @@ export default async function AdminFeedbackDetailPage({
           </Meta>
           <Meta label="Time to resolve">
             {t.timeToResolveMs !== null ? <strong className="text-emerald-700">{fmtDuration(t.timeToResolveMs)}</strong> : "—"}
+          </Meta>
+          <Meta label="Assigned to">
+            {t.assignedTo.length ? t.assignedTo.join(", ") : <span className="text-gray-400">Unassigned</span>}
           </Meta>
           <Meta label="Updates">{Math.max(0, t.events.length - 1)}</Meta>
         </dl>
@@ -166,6 +171,7 @@ export default async function AdminFeedbackDetailPage({
                   ))}
                 </Select>
               </Field>
+              <AssignPicker options={ASSIGNEES} defaultSelected={t.assignedTo} />
               <Field
                 label={t.kind === "BUG" ? "Fix details / note to requester" : "Note to requester"}
                 hint={t.kind === "BUG" ? "What was wrong and how it was fixed. Shown to the requester and included in the bug-fix reports." : "Shown to the requester on their ticket."}
