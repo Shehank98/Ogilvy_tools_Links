@@ -24,6 +24,14 @@ The whole hub sits behind a staff login (switch it off with `FEATURES.userLogin`
 - **Assignment emails:** assigning a ticket emails each newly assigned person (addresses in `src/lib/team.ts`) with the ticket details, the requester, the attachment count and an *Open ticket* link; replying goes to the requester. There is a tick-box to switch this off per save.
 - **Email** goes through a small Google Apps Script relay, see [`apps-script/README.md`](apps-script/README.md). Without `APPS_SCRIPT_URL` / `APPS_SCRIPT_SECRET`, local dev prints emails to the console.
 
+## Tool details and who can see each tool
+
+- **Tool pop-up:** clicking a card opens a details pop-up (about, what it's for, initiated by, developed by, team, advisory team) with an **Open tool** button. Fill these in under **Admin → Tools → Edit**. Tools without details fall back to the short description.
+- **Visibility:** each tool is either **Everyone** or **Only selected people**. A person who isn't selected never sees the tool: not on the home page, not in the Report dropdown, and tickets for it are rejected. Existing tools stay open to everyone.
+- **Where to manage it:** per tool in the tool form (searchable checklist), or for everything at once in **Admin → Tool access** (people × tools grid, with a "Visible to everyone" switch row and a Save bar).
+- Switching a tool back to Everyone keeps its selected list, so flipping to "selected" again restores it.
+- Needs migration `20261011_tool_details_access` (runs automatically on `npm start`; `/api/health` reports if it's missing).
+
 ## Local development
 
 ```bash

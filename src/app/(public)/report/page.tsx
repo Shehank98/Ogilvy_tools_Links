@@ -4,6 +4,7 @@ import { FEATURES } from "@/lib/features";
 import { requireUser } from "@/lib/user-auth";
 import { TicketForm } from "@/components/TicketForm";
 import { storageEnabled } from "@/lib/storage";
+import { visibleToolsWhere } from "@/lib/tool-access";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,10 @@ export default async function ReportPage({
   searchParams: Promise<{ tool?: string }>;
 }) {
   if (!FEATURES.userLogin) redirect("/");
-  await requireUser();
+  const user = await requireUser();
   const { tool } = await searchParams;
   const tools = await prisma.tool.findMany({
-    where: { isActive: true },
+    where: visibleToolsWhere(user?.id ?? null),
     orderBy: [{ order: "asc" }, { name: "asc" }],
     select: { id: true, name: true },
   });

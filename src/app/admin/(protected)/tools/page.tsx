@@ -3,12 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { AdminTable } from "@/components/AdminTable";
 import { deleteTool, toggleToolActive } from "@/lib/actions/tools";
 import { resolveImageUrl } from "@/lib/image";
+import { visibilityLabel } from "@/lib/tool-access";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminToolsPage() {
   const tools = await prisma.tool.findMany({
     orderBy: [{ order: "asc" }, { name: "asc" }],
+    include: { _count: { select: { access: true } } },
   });
 
   return (
@@ -54,6 +56,18 @@ export default async function AdminToolsPage() {
             ),
           },
           { header: "Category", cell: (tool) => tool.category },
+          {
+            header: "Visible to",
+            cell: (tool) => (
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  tool.visibility === "EVERYONE" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-800"
+                }`}
+              >
+                {visibilityLabel(tool.visibility, tool._count.access)}
+              </span>
+            ),
+          },
           { header: "Order", cell: (tool) => tool.order },
           { header: "Clicks", cell: (tool) => tool.clickCount },
           {

@@ -11,6 +11,7 @@ import {
 } from "@/lib/mail";
 import { KIND_LABEL, PRIORITY_LABEL, ticketCode } from "@/lib/tickets";
 import { prepareUploads, saveTicketFiles } from "@/lib/ticket-files";
+import { visibleToolsWhere } from "@/lib/tool-access";
 import { firstZodError, type ActionState } from "./state";
 
 export async function submitTicket(
@@ -38,8 +39,8 @@ export async function submitTicket(
   let targetType: "TOOL" | "GENERAL" = "GENERAL";
   let targetName = "General";
   if (d.targetId !== "general") {
-    const tool = await prisma.tool.findUnique({
-      where: { id: d.targetId },
+    const tool = await prisma.tool.findFirst({
+      where: { id: d.targetId, ...visibleToolsWhere(user.id) },
       select: { name: true },
     });
     if (!tool) return { error: "That tool no longer exists. Pick another." };

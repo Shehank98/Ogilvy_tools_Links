@@ -2,14 +2,16 @@ import { prisma } from "@/lib/prisma";
 import { ToolDirectory } from "@/components/ToolDirectory";
 import { UpcomingCards } from "@/components/UpcomingCards";
 import { getCurrentUser } from "@/lib/user-auth";
+import { visibleToolsWhere } from "@/lib/tool-access";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const signedIn = !!(await getCurrentUser());
+  const user = await getCurrentUser();
+  const signedIn = !!user;
   const [tools, upcoming] = await Promise.all([
     prisma.tool.findMany({
-      where: { isActive: true },
+      where: visibleToolsWhere(user?.id ?? null),
       orderBy: [{ order: "asc" }, { name: "asc" }],
       select: {
         id: true,
@@ -19,6 +21,13 @@ export default async function HomePage() {
         description: true,
         category: true,
         isBeta: true,
+        subtitle: true,
+        about: true,
+        purpose: true,
+        initiatedBy: true,
+        developedBy: true,
+        team: true,
+        advisory: true,
       },
     }),
     prisma.upcoming.findMany({

@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ToolVisibility {
+  EVERYONE
+  SELECTED
+}
+
 model Tool {
   id          String   @id @default(cuid())
   name        String
@@ -18,6 +23,17 @@ model Tool {
   isActive    Boolean  @default(true)
   isBeta      Boolean  @default(false)
   clickCount  Int      @default(0)
+  // Details shown in the pop-up when someone clicks the tool's card.
+  subtitle    String?
+  about       String?
+  purpose     String?  // "What it's for": one point per line
+  initiatedBy String?
+  developedBy String?
+  team        String?
+  advisory    String?
+  // Who sees the tool: everyone, or only the people listed in ToolAccess.
+  visibility  ToolVisibility @default(EVERYONE)
+  access      ToolAccess[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -159,6 +175,7 @@ model User {
   updatedAt    DateTime      @updatedAt
   sessions     UserSession[]
   feedback     Feedback[]
+  toolAccess   ToolAccess[]
 }
 
 model UserSession {
@@ -171,6 +188,19 @@ model UserSession {
 
   @@index([userId])
   @@index([expiresAt])
+}
+
+// A person who may see a tool whose visibility is SELECTED.
+model ToolAccess {
+  id        String   @id @default(cuid())
+  toolId    String
+  tool      Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([toolId, userId])
+  @@index([userId])
 }
 
 enum EmailCodePurpose {

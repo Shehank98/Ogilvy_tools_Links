@@ -39,6 +39,8 @@ export async function GET() {
       await prisma.feedback.findFirst({ select: { ticketNo: true, assignedTo: true } });
       await prisma.feedbackEvent.count();
       await prisma.ticketFile.count();
+      await prisma.toolAccess.count();
+      await prisma.tool.findFirst({ select: { visibility: true, about: true } });
       checks.migrations = "ok (tables exist)";
     } catch (e) {
       checks.migrations = `FAILED: database is behind the code. Run "npx prisma migrate deploy" (see README). ${shortError(e)}`;

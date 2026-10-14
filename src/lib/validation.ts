@@ -16,6 +16,26 @@ export const toolSchema = z.object({
   order: z.coerce.number().int("Order must be a whole number").default(0),
   isActive: z.coerce.boolean().default(false),
   isBeta: z.coerce.boolean().default(false),
+  subtitle: z.string().trim().max(120, "Subtitle is too long (120 characters max)").optional(),
+  about: z.string().trim().max(1500, "“About this tool” is too long (1500 characters max)").optional(),
+  purpose: z.string().trim().max(1200, "“What it's for” is too long (1200 characters max)").optional(),
+  initiatedBy: z.string().trim().max(200, "“Initiated by” is too long").optional(),
+  developedBy: z.string().trim().max(300, "“Developed by” is too long").optional(),
+  team: z.string().trim().max(800, "“Team” is too long").optional(),
+  advisory: z.string().trim().max(500, "“Advisory team” is too long").optional(),
+  visibility: z.enum(["EVERYONE", "SELECTED"]).default("EVERYONE"),
+});
+
+export const toolAccessSchema = z.object({
+  changes: z
+    .array(
+      z.object({
+        toolId: z.string().min(1),
+        visibility: z.enum(["EVERYONE", "SELECTED"]),
+        userIds: z.array(z.string().min(1)).max(5000),
+      })
+    )
+    .max(200),
 });
 
 export const workshopSchema = z.object({

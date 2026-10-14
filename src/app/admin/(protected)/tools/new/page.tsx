@@ -4,6 +4,11 @@ import { ToolForm } from "@/components/admin/ToolForm";
 export const dynamic = "force-dynamic";
 
 export default async function NewToolPage() {
+  const people = await prisma.user.findMany({
+      where: { verified: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, email: true },
+    });
   const categories = (
     await prisma.tool.findMany({
       select: { category: true },
@@ -15,7 +20,7 @@ export default async function NewToolPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Add tool</h1>
-      <ToolForm categories={categories} />
+      <ToolForm categories={categories} people={people} />
     </div>
   );
 }
