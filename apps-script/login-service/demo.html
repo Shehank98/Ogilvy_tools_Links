@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login demo</title>
+<style>
+  :root{--red:#ee3124;--red-dark:#c4271d;--ink:#111;--grey:#6e6e6e;--line:#e4e4e4;--bg:#faf9f7}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--ink);font:15px/1.5 Helvetica,Arial,sans-serif;padding:16px}
+  .card{width:100%;max-width:400px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:18px;margin:0 0 4px}
+  .muted{color:var(--grey);font-size:13px;margin:0 0 14px}
+  .tabs{display:flex;border-bottom:1px solid var(--line);margin:0 0 18px}
+  .tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 14px;font:inherit;font-weight:700;color:var(--grey);cursor:pointer;margin-bottom:-1px}
+  .tabs button[aria-selected=true]{color:var(--ink);border-color:var(--red)}
+  label{display:block;font-size:13px;font-weight:600;margin:0 0 12px}
+  input{display:block;width:100%;margin-top:4px;padding:9px 11px;border:1px solid #cfcfcf;border-radius:6px;font:inherit}
+  input:focus{outline:none;border-color:var(--ink);box-shadow:0 0 0 3px rgba(238,49,36,.15)}
+  .pw{position:relative}.pw input{padding-right:42px}
+  .eye{position:absolute;right:0;top:4px;height:38px;width:40px;border:0;background:none;cursor:pointer;color:#888;font-size:16px}
+  .code{text-align:center;font-size:22px;font-weight:700;letter-spacing:.4em}
+  .btn{width:100%;border:0;border-radius:6px;background:var(--red);color:#fff;padding:10px;font:inherit;font-weight:700;cursor:pointer}
+  .btn:hover{background:var(--red-dark)} .btn:disabled{opacity:.6;cursor:wait}
+  .btn.ghost{background:#fff;color:var(--ink);border:1px solid #ccc;margin-top:8px}
+  .link{background:none;border:0;color:var(--red);cursor:pointer;font:inherit;font-size:13px;padding:0}
+  .link:disabled{color:var(--grey);cursor:default}
+  .row{display:flex;justify-content:space-between;margin-top:12px}
+  .msg{border-radius:6px;padding:8px 12px;font-size:13px;margin:0 0 12px}
+  .err{background:#fef2f2;color:#b91c1c;animation:shake .4s}.ok{background:#f0fdf4;color:#15803d}
+  @keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .hidden{display:none}
+  hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<main class="card" id="app" aria-live="polite"></main>
+
+<script src="login-client.js"></script>
+<script>
+(function () {
+  'use strict';
+  // 1) Put YOUR web app URL here (ends in /exec). The local dev server serves it at /exec.
+  var API_URL = new URLSearchParams(location.search).get('api') || '/exec';
+  var auth = createAuthClient({ apiUrl: API_URL });
+
+  var $app = document.getElementById('app'), view = 'login', email = '', cooldown = 0, timer = null, cfg = { passwordHint: 'At least 6 characters, with a letter and a number.', allowedDomains: ['ogilvy.com'], appName: 'Sign in' };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+
+  function pw(name, label, auto) {
+    return '<label>' + label + '<div class="pw"><input name="' + name + '" type="password" required autocomplete="' + auto + '"><button type="button" class="eye" aria-label="Show password" data-eye>👁</button></div></label>';
+  }
+  function banner(msg, kind) { return msg ? '<p class="msg ' + (kind || 'err') + '" role="' + (kind === 'ok' ? 'status' : 'alert') + '">' + esc(msg) + '</p>' : ''; }
+
+  var screens = {
+    login: function (m) { return '<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-go="login">Sign in</button><button role="tab" aria-selected="false" data-go="register">Create account</button></div>' + m +
+      '<form data-form="login"><label>Email<input name="email" type="email" required autocomplete="username" placeholder="firstname.lastname@' + esc(cfg.allowedDomains[0]) + '" value="' + esc(email) + '"></label>' + pw('password', 'Password', 'current-password') +
+      '<button class="btn">Sign in</button><div class="row"><button type="button" class="link" data-go="forgot">Forgot password?</button><button type="button" class="link" data-go="register">Create an account</button></div></form>'; },
+    register: function (m) { return '<div class="tabs" role="tablist"><button role="tab" aria-selected="false" data-go="login">Sign in</button><button role="tab" aria-selected="true" data-go="register">Create account</button></div>' + m +
+      '<form data-form="register"><label>Full name<input name="name" required autocomplete="name" maxlength="80"></label><label>Email<input name="email" type="email" required autocomplete="email" value="' + esc(email) + '"></label>' +
+      pw('password', 'Password', 'new-password') + '<p class="muted" style="margin-top:-6px">' + esc(cfg.passwordHint) + '</p>' + pw('confirm', 'Confirm password', 'new-password') + '<button class="btn">Create account &amp; send code</button></form>'; },
+    verify: function (m) { return '<h2>Check your inbox</h2><p class="muted">Enter the 6-digit code sent to <strong>' + esc(email) + '</strong>.</p>' + m +
+      '<form data-form="verify"><label>6-digit code<input name="code" class="code" inputmode="numeric" maxlength="6" pattern="\\d{6}" autocomplete="one-time-code" placeholder="000000" required autofocus></label><button class="btn">Verify &amp; continue</button>' +
+      '<div class="row"><button type="button" class="link" data-resend ' + (cooldown ? 'disabled' : '') + '>' + (cooldown ? 'Resend code (' + cooldown + 's)' : 'Resend code') + '</button><button type="button" class="link" data-go="register">Use a different email</button></div><div class="row"><button type="button" class="link" data-go="login">Back to sign in</button></div></form>'; },
+    forgot: function (m) { return '<h2>Reset your password</h2><p class="muted">We\'ll email you a code to choose a new one.</p>' + m +
+      '<form data-form="forgot"><label>Email<input name="email" type="email" required autocomplete="email" value="' + esc(email) + '"></label><button class="btn">Email me a reset code</button><div class="row"><button type="button" class="link" data-go="login">Back to sign in</button></div></form>'; },
+    reset: function (m) { return '<h2>Choose a new password</h2><p class="muted">Enter the code we emailed to <strong>' + esc(email) + '</strong>.</p>' + m +
+      '<form data-form="reset"><label>Reset code<input name="code" class="code" inputmode="numeric" maxlength="6" pattern="\\d{6}" autocomplete="one-time-code" placeholder="000000" required autofocus></label>' + pw('password', 'New password', 'new-password') + pw('confirm', 'Confirm new password', 'new-password') +
+      '<button class="btn">Update password</button><div class="row"><button type="button" class="link" data-go="forgot">Start again</button></div></form>'; },
+    account: function (m) { var u = auth.user || {}; return '<h1>Hello, ' + esc((u.name || '').split(' ')[0]) + '</h1><p class="muted">' + esc(u.email) + '</p>' + m +
+      '<h2 style="font-size:15px">Account settings</h2><form data-form="name"><label>Your name<input name="name" required maxlength="80" value="' + esc(u.name) + '"></label><button class="btn ghost" style="margin-top:0">Save name</button></form><hr>' +
+      '<form data-form="password">' + pw('currentPassword', 'Current password', 'current-password') + pw('newPassword', 'New password', 'new-password') + '<button class="btn ghost" style="margin-top:0">Change password</button></form><hr>' +
+      '<button class="btn" data-signout>Sign out</button><button class="btn ghost" data-signout-all>Sign out on all devices</button>'; }
+  };
+
+  function render(msg, kind) { $app.innerHTML = screens[view](banner(msg, kind)); var f = $app.querySelector('input'); if (f && view !== 'login') f.focus(); }
+  function go(v, msg, kind) { view = v; render(msg, kind); }
+  // Show a message above the form WITHOUT redrawing it, so nothing the person typed is lost.
+  function note(msg, kind) {
+    var old = $app.querySelector('.msg'); if (old) old.remove();
+    var form = $app.querySelector('form'); if (form) form.insertAdjacentHTML('beforebegin', banner(msg, kind));
+  }
+  function startCooldown() { cooldown = 30; clearInterval(timer); timer = setInterval(function () { cooldown--; if (!cooldown) clearInterval(timer); if (view === 'verify') { var b = $app.querySelector('[data-resend]'); if (b) { b.disabled = cooldown > 0; b.textContent = cooldown ? 'Resend code (' + cooldown + 's)' : 'Resend code'; } } }, 1000); }
+
+  async function run(form, fn) {
+    var btn = form.querySelector('button.btn'), label = btn.innerHTML; btn.disabled = true; btn.textContent = 'Please wait…';
+    try { await fn(Object.fromEntries(new FormData(form))); }
+    catch (e) {
+      if (e.code === 'UNVERIFIED') { view = 'verify'; startCooldown(); render(e.message, 'err'); }
+      else if (e.code === 'AUTH') { view = 'login'; render(e.message, 'err'); }
+      else note(e.message, 'err');
+    } finally { if (btn.isConnected) { btn.disabled = false; btn.innerHTML = label; } }
+  }
+
+  var handlers = {
+    login: function (d) { email = d.email.trim().toLowerCase(); return auth.login(email, d.password).then(function () { go('account'); }); },
+    register: function (d) { if (d.password !== d.confirm) throw new Error('Passwords do not match.'); email = d.email.trim().toLowerCase(); return auth.register(d.name, email, d.password).then(function (r) { startCooldown(); go('verify', r.message, 'ok'); }); },
+    verify: function (d) { return auth.verify(email, d.code.trim()).then(function () { go('account'); }); },
+    forgot: function (d) { email = d.email.trim().toLowerCase(); return auth.requestReset(email).then(function (r) { go('reset', r.message, 'ok'); }); },
+    reset: function (d) { if (d.password !== d.confirm) throw new Error('Passwords do not match.'); return auth.resetPassword(email, d.code.trim(), d.password).then(function (r) { go('login', r.message, 'ok'); }); },
+    name: function (d) { return auth.updateName(d.name).then(function () { note('Name saved.', 'ok'); }); },
+    password: function (d) { return auth.changePassword(d.currentPassword, d.newPassword).then(function (r) { go('account', r.message, 'ok'); }); }
+  };
+
+  $app.addEventListener('submit', function (e) { e.preventDefault(); var f = e.target; run(f, handlers[f.dataset.form]); });
+  $app.addEventListener('click', function (e) {
+    var t = e.target.closest('button'); if (!t) return;
+    if (t.dataset.go) go(t.dataset.go);
+    else if (t.hasAttribute('data-eye')) { var i = t.previousElementSibling; var show = i.type === 'password'; i.type = show ? 'text' : 'password'; t.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); }
+    else if (t.hasAttribute('data-resend')) { auth.resend(email).then(function (r) { startCooldown(); go('verify', r.message, 'ok'); }).catch(function (x) { note(x.message, 'err'); }); }
+    else if (t.hasAttribute('data-signout')) auth.logout().then(function () { go('login', 'Signed out.', 'ok'); });
+    else if (t.hasAttribute('data-signout-all')) auth.logoutEverywhere().then(function () { go('login', 'Signed out on all devices.', 'ok'); });
+  });
+
+  // Start: pick up the service's own settings, and check any saved session is still valid.
+  auth.config().then(function (c) { cfg = c; document.title = c.appName; }).catch(function () {}).then(function () {
+    if (!auth.isSignedIn()) return go('login');
+    auth.me().then(function () { go('account'); }).catch(function () { go('login'); });
+  });
+})();
+</script>
+</body>
+</html>

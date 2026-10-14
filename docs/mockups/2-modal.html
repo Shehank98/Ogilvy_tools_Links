@@ -1,0 +1,34 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="shared.css">
+<style>
+.dim{position:fixed;inset:0;background:rgba(17,17,17,.5);backdrop-filter:blur(3px)}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:640px;background:linear-gradient(180deg,#fff 0%,#f7f9fb 100%);border-radius:26px;padding:34px 36px 28px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.mh{display:flex;align-items:flex-start;gap:18px}
+.mh .logo{width:84px;height:84px;border-radius:22px;flex:none}
+.mh .logo svg{width:50px;height:50px}
+.mh h1{font-family:'Source Serif 4',serif;font-size:30px;color:var(--brand);line-height:1.1;margin-top:6px}
+.mh p{margin:6px 0 0;color:#6b7280;font-size:14px}
+.x{margin-left:auto;width:40px;height:40px;border-radius:99px;border:2px solid var(--brand);color:var(--brand);display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;flex:none}
+.sec{margin-top:12px;background:#eef1f5;border-radius:16px;padding:14px 18px}
+.sec b{display:block;font-size:11.5px;letter-spacing:.14em;color:var(--brand);font-weight:700;margin-bottom:4px}
+.sec p{margin:0;font-size:15px;line-height:1.5;color:#1f2937}
+.sec ul{margin:2px 0 0;padding-left:18px;font-size:15px;line-height:1.55;color:#1f2937}
+.foot{display:flex;align-items:center;gap:14px;margin-top:20px}
+.foot .btn{flex:1;justify-content:center;font-size:16px;padding:13px}
+.foot a{color:#6b7280;font-weight:500;font-size:13.5px}
+.badges{display:flex;gap:8px;margin-top:10px}.badges span{font-size:11.5px;font-weight:600;border-radius:99px;padding:4px 11px;background:#e6f6fa;color:#0f6f99}.badges span.g{background:#e3f6ee;color:#047857}
+</style></head><body>
+<script src="shared.js"></script>
+<script>
+const t = TOOLS[0];
+document.body.insertAdjacentHTML('beforeend', NAV + `<div class="wrap"><div class="grid">${TOOLS.map((x,i)=>tile(x, i===0?'hover':'')).join('')}</div></div>
+<div class="dim"></div>
+<div class="modal">
+  <div class="mh">${logo(t,84)}<div><h1>${t.name}</h1><p>Ogilvy Media Automation Team</p><div class="badges"><span>Media</span><span class="g">Live</span></div></div><div class="x">×</div></div>
+  <div class="sec"><b>ABOUT THIS TOOL</b><p>Turns your campaign data into a clear incrementality view in minutes, so you can show what media actually drove results and where to move budget next.</p></div>
+  <div class="sec"><b>WHAT IT'S FOR</b><ul><li>Measure the true lift of a campaign</li><li>Compare channels side by side</li><li>Export a client-ready summary</li></ul></div>
+  <div class="sec"><b>INITIATED BY</b><p>Sandaruwan Perera</p></div>
+  <div class="sec"><b>DEVELOPED BY</b><p>Sandaruwan Perera, Rohan Perera &amp; Shehan Kavishka</p></div>
+  <div class="sec"><b>TEAM</b><p>Sachintha Gunawardane, Thusara Ranasinghe, Hasith Dilakshana, Primali Dias, Ravihari Muhandiramge, Shashika Wijesinghe, Vithyashini Sivasundaram</p></div>
+  <div class="foot"><span class="btn">Open tool ↗</span><a>💡 Suggest or report a problem</a></div>
+</div>`);
+</script></body></html>
